@@ -1,12 +1,12 @@
 <!doctype html>
-<!-- Prototipo autónomo de ArtDossier Studio: CSS y JavaScript incluidos en este archivo. -->
+<!-- Panel de Cachivarte: punto de entrada a los módulos (ArtDossier Studio y próximos). -->
 <html lang="es">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Crea, aprende y exporta un dossier artístico profesional sin inventar tu trayectoria.">
+  <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#f3efe6">
-  <title>ArtDossier Studio</title>
+  <title>Panel de Cachivarte</title>
   <style>
 :root {
   --ink: #161815;
@@ -18,1280 +18,267 @@
   --accent-dark: #c92e19;
   --lime: #c7ff42;
   --blue: #3252d7;
+  --ok: #2f8a52;
   --shadow: 0 18px 55px rgba(31, 27, 20, .10);
-  --radius: 18px;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: var(--ink);
   background: var(--paper);
 }
-
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
 body { margin: 0; min-width: 320px; background: var(--paper); color: var(--ink); }
-button, input, textarea, select { font: inherit; }
-button, a, input, textarea { -webkit-tap-highlight-color: transparent; }
-button { color: inherit; }
 a { color: inherit; }
 img { max-width: 100%; display: block; }
 [hidden] { display: none !important; }
-
+:focus-visible { outline: 3px solid color-mix(in srgb, var(--blue) 70%, white); outline-offset: 3px; }
 .skip-link { position: fixed; left: 1rem; top: -4rem; z-index: 200; padding: .8rem 1rem; background: var(--ink); color: white; text-decoration: none; }
 .skip-link:focus { top: 1rem; }
-.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-
-:focus-visible { outline: 3px solid color-mix(in srgb, var(--blue) 70%, white); outline-offset: 3px; }
 
 .topbar { height: 72px; position: sticky; top: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0 24px; border-bottom: 1px solid var(--line); background: rgba(244, 240, 231, .94); backdrop-filter: blur(15px); }
-.brand { display: inline-flex; align-items: center; gap: .7rem; text-decoration: none; min-width: 210px; }
+.brand { display: inline-flex; align-items: center; gap: .7rem; text-decoration: none; }
 .brand-mark { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: var(--ink); color: var(--lime); font-family: Georgia, serif; font-weight: 700; }
 .brand strong { display: block; font-size: .98rem; line-height: 1; }
 .brand small { display: block; margin-top: .28rem; color: var(--muted); font-size: .57rem; letter-spacing: .14em; }
-.top-actions { display: flex; align-items: center; justify-content: flex-end; gap: .55rem; }
-.save-status { margin-right: .4rem; color: var(--muted); font-size: .75rem; white-space: nowrap; }
-.menu-button { display: none; border: 0; background: transparent; font-size: 1.4rem; }
+.badge { border: 1px solid var(--line); border-radius: 999px; padding: .35rem .6rem; color: var(--muted); font-size: .6rem; font-weight: 800; letter-spacing: .09em; white-space: nowrap; }
 
-.button { min-height: 40px; border: 1px solid transparent; border-radius: 999px; padding: .65rem 1rem; font-weight: 700; font-size: .82rem; cursor: pointer; transition: transform .18s ease, background .18s ease, border-color .18s ease; }
-.button:hover { transform: translateY(-1px); }
-.button.primary { background: var(--ink); color: white; }
-.button.primary:hover { background: var(--accent); }
-.button.ghost { background: transparent; border-color: var(--line); }
-.button.ghost:hover { background: white; border-color: var(--ink); }
-.button.large { min-height: 48px; padding-inline: 1.35rem; }
-.button.full { width: 100%; }
-.text-button { border: 0; padding: .35rem .1rem; background: transparent; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; font-size: .74rem; cursor: pointer; }
-.icon-button { width: 42px; height: 42px; border: 1px solid var(--line); border-radius: 50%; background: white; font-size: 1.6rem; cursor: pointer; }
-
-.app-shell { display: grid; grid-template-columns: 245px minmax(540px, 1fr) 340px; min-height: calc(100vh - 72px); }
-.sidebar { position: sticky; top: 72px; height: calc(100vh - 72px); overflow-y: auto; padding: 32px 22px 22px; border-right: 1px solid var(--line); background: #ebe5d9; }
-.sidebar-intro h1 { margin: .3rem 0 .75rem; font: 500 1.9rem/1.02 Georgia, serif; letter-spacing: -.035em; }
-.sidebar-intro > p:last-child { margin: 0 0 1.65rem; color: var(--muted); font-size: .82rem; line-height: 1.55; }
+.layout { display: grid; grid-template-columns: 245px minmax(0, 1fr); min-height: calc(100vh - 72px); background: #ebe5d9; }
+.sidebar { position: sticky; top: 72px; height: calc(100vh - 72px); overflow-y: auto; padding: 32px 22px; border-right: 1px solid var(--line); background: #ebe5d9; }
 .eyebrow { margin: 0 0 .55rem; color: var(--accent-dark); font-weight: 800; font-size: .65rem; letter-spacing: .15em; }
-.section-nav { display: grid; gap: .18rem; }
-.nav-button { display: flex; align-items: center; gap: .75rem; width: 100%; border: 0; border-radius: 10px; padding: .66rem .7rem; background: transparent; color: #4f504c; text-align: left; font-size: .82rem; cursor: pointer; }
-.nav-button span { width: 1.5rem; color: #92928b; font: 700 .63rem/1 ui-monospace, monospace; }
-.nav-button:hover { background: rgba(255,255,255,.6); }
-.nav-button.active { background: var(--ink); color: white; }
-.nav-button.active span { color: var(--lime); }
+.nav { display: grid; gap: .18rem; margin-top: 1rem; }
+.nav a, .nav span { display: flex; align-items: center; justify-content: space-between; gap: .75rem; border-radius: 10px; padding: .66rem .7rem; color: #4f504c; font-size: .82rem; text-decoration: none; }
+.nav a:hover { background: rgba(255,255,255,.6); }
+.nav a[aria-current="page"] { background: var(--ink); color: white; }
+.nav span { color: #8d8d86; cursor: default; }
+.nav small { font-size: .58rem; font-weight: 800; letter-spacing: .08em; }
 .sidebar-note { margin-top: 2rem; padding: 1rem; border: 1px solid #cdc5b7; border-radius: 13px; }
 .sidebar-note strong { font-size: .78rem; }
 .sidebar-note p { margin: .4rem 0 0; color: var(--muted); font-size: .7rem; line-height: 1.45; }
 
-.workspace { min-width: 0; padding: clamp(36px, 5vw, 72px) clamp(30px, 5vw, 76px) 80px; background: var(--panel); }
-.panel { display: none; max-width: 900px; margin: 0 auto; animation: panelIn .25s ease; }
-.panel.active { display: block; }
-@keyframes panelIn { from { opacity: 0; transform: translateY(8px); } }
-.panel-heading { margin-bottom: 2.4rem; }
-.panel-heading h2 { max-width: 740px; margin: 0; font: 500 clamp(2.2rem, 4.5vw, 4.7rem)/.96 Georgia, serif; letter-spacing: -.05em; }
-.panel-heading > p:last-child, .panel-heading div > p:last-child { max-width: 660px; margin: 1.2rem 0 0; color: var(--muted); line-height: 1.65; }
-.inline-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 1.25rem; }
+main { min-width: 0; padding: clamp(32px, 5vw, 64px) clamp(16px, 5vw, 72px) 80px; background: var(--panel); }
+.wrap { max-width: 1040px; margin: 0 auto; }
+h1 { margin: 0; font: 500 clamp(2.2rem, 5vw, 4.2rem)/.98 Georgia, serif; letter-spacing: -.05em; }
+.lead { max-width: 640px; margin: 1rem 0 2.4rem; color: var(--muted); line-height: 1.65; }
+h2 { margin: 0 0 1rem; font-size: 1.05rem; }
 
-.section-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
-.section-heading.spaced { margin-top: 2.6rem; }
-.section-heading > div { display: flex; align-items: center; gap: .75rem; }
-.section-heading h3 { margin: 0; font-size: 1.05rem; }
-.section-number { display: grid; place-items: center; width: 27px; height: 27px; border: 1px solid var(--ink); border-radius: 50%; font: 700 .62rem/1 ui-monospace, monospace; }
-.search-field input { width: 210px; border: 0; border-bottom: 1px solid var(--line); padding: .55rem .1rem; background: transparent; outline: none; }
-.search-field input:focus { border-color: var(--ink); }
+.current { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 1.5rem; border: 1px solid var(--line); border-radius: 18px; padding: 1.25rem; background: white; box-shadow: var(--shadow); }
+.cover { aspect-ratio: 1 / 1.414; display: flex; flex-direction: column; justify-content: space-between; padding: 14px; background: #f6f1e7; border: 1px solid var(--line); overflow: hidden; }
+.cover-art { flex: 1; margin: 10px 0; display: grid; place-items: center; background: linear-gradient(145deg, #e26043, #771e2b); color: rgba(255,255,255,.7); font: 700 2.2rem Georgia, serif; overflow: hidden; }
+.cover-art img { width: 100%; height: 100%; object-fit: cover; }
+.cover-meta { font: 700 .5rem/1 ui-monospace, monospace; letter-spacing: .08em; }
+.cover-title { font: 500 1rem/1.05 Georgia, serif; }
+.current-body { display: flex; flex-direction: column; min-width: 0; }
+.current-body h3 { margin: .2rem 0 .2rem; font: 500 1.8rem/1.05 Georgia, serif; overflow-wrap: anywhere; }
+.current-body .sub { margin: 0; color: var(--muted); font-size: .82rem; }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .6rem; margin: 1.2rem 0; }
+.stat { border: 1px solid var(--line); border-radius: 12px; padding: .7rem .8rem; }
+.stat b { display: block; font: 600 1.5rem/1 Georgia, serif; }
+.stat span { color: var(--muted); font-size: .68rem; }
+.progress { height: 8px; border-radius: 99px; background: #ece6da; overflow: hidden; }
+.progress i { display: block; height: 100%; width: 0; background: var(--ink); transition: width .3s ease; }
+.progress-label { display: flex; justify-content: space-between; margin: 0 0 .4rem; font-size: .72rem; color: var(--muted); }
+.todo { margin: .9rem 0 0; padding-left: 1.1rem; color: var(--muted); font-size: .78rem; line-height: 1.6; }
+.actions { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: auto; padding-top: 1.2rem; }
+.button { display: inline-flex; align-items: center; min-height: 42px; border: 1px solid transparent; border-radius: 999px; padding: .65rem 1.1rem; font-weight: 700; font-size: .82rem; text-decoration: none; cursor: pointer; }
+.button.primary { background: var(--ink); color: white; }
+.button.primary:hover { background: var(--accent); }
+.button.ghost { border-color: var(--line); background: transparent; }
+.button.ghost:hover { border-color: var(--ink); background: white; }
+.empty { color: var(--muted); font-size: .85rem; line-height: 1.6; }
 
-.choice-grid { display: grid; gap: .7rem; }
-.choice-grid.disciplines { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.choice-grid.purposes { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-.choice-card { position: relative; min-height: 116px; border: 1px solid var(--line); border-radius: 14px; padding: 1rem; background: white; text-align: left; cursor: pointer; transition: border-color .18s, transform .18s, box-shadow .18s; }
-.choice-card:hover { transform: translateY(-2px); border-color: #898980; box-shadow: 0 10px 24px rgba(30,26,18,.07); }
-.choice-card.selected { border: 2px solid var(--ink); padding: calc(1rem - 1px); background: var(--lime); }
-.choice-card .choice-icon { display: block; margin-bottom: .85rem; font-size: 1.55rem; }
-.choice-card strong { display: block; font-size: .8rem; line-height: 1.25; }
-.choice-card small { display: block; margin-top: .35rem; color: var(--muted); font-size: .65rem; line-height: 1.35; }
-.choice-card.selected small { color: #414436; }
-.custom-discipline { margin-top: .75rem; }
+.modules { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 2.8rem; }
+.module { position: relative; display: flex; flex-direction: column; min-height: 230px; border: 1px solid var(--line); border-radius: 16px; padding: 1.2rem; background: white; text-decoration: none; transition: transform .18s, border-color .18s; }
+a.module:hover { transform: translateY(-2px); border-color: var(--ink); }
+.module.soon { background: transparent; border-style: dashed; }
+.module .tag { width: max-content; border-radius: 999px; padding: .25rem .55rem; font-size: .58rem; font-weight: 800; letter-spacing: .1em; }
+.module .tag.on { background: var(--lime); color: var(--ink); }
+.module .tag.off { border: 1px solid var(--line); color: var(--muted); }
+.module h3 { margin: 1rem 0 .3rem; font: 500 1.45rem/1.1 Georgia, serif; }
+.module .verb { color: var(--accent-dark); font-size: .62rem; font-weight: 800; letter-spacing: .12em; }
+.module p { margin: .6rem 0 0; color: var(--muted); font-size: .78rem; line-height: 1.55; }
+.module .go { margin-top: auto; padding-top: 1rem; font-size: .78rem; font-weight: 700; }
 
-.template-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem; }
-.template-card { border: 1px solid var(--line); border-radius: 14px; padding: .7rem; background: white; text-align: left; cursor: pointer; }
-.template-card.selected { border: 2px solid var(--ink); padding: calc(.7rem - 1px); }
-.template-swatch { height: 100px; margin-bottom: .75rem; border-radius: 8px; overflow: hidden; background: #eee; }
-.template-swatch::before, .template-swatch::after { content: ""; display: block; }
-.swatch-museo { padding: 14px; background: #f5f0e5; }
-.swatch-museo::before { width: 42%; height: 7px; background: #222; }
-.swatch-museo::after { width: 100%; height: 46px; margin-top: 14px; background: #d3553d; }
-.swatch-editorial { padding: 10px; background: #f35e3d; }
-.swatch-editorial::before { width: 65%; height: 58px; margin-left: auto; background: #152f6b; }
-.swatch-editorial::after { width: 48%; height: 9px; margin-top: 8px; background: #ffff79; }
-.swatch-proceso { padding: 12px; background: #d7d0c2; }
-.swatch-proceso::before { width: 70%; height: 48px; background: repeating-linear-gradient(45deg, #333 0 2px, transparent 2px 8px); }
-.swatch-proceso::after { width: 90%; height: 1px; margin-top: 16px; background: #333; }
-.swatch-catalogo { padding: 9px; background: #131313; }
-.swatch-catalogo::before { width: 100%; height: 52px; background: linear-gradient(90deg, #f2eee5 0 49%, transparent 49% 52%, #b8d8e5 52%); }
-.swatch-catalogo::after { width: 55%; height: 6px; margin-top: 11px; background: white; }
-.template-card strong { font-size: .78rem; }
-.template-card small { display: block; margin-top: .3rem; color: var(--muted); font-size: .63rem; line-height: 1.35; }
-.recommendation { margin: 1.8rem 0 1rem; border-left: 3px solid var(--accent); padding: .8rem 1rem; background: #fff4ef; color: #4c403a; font-size: .83rem; line-height: 1.55; }
-
-.guide-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
-.guide-card { position: relative; border: 1px solid var(--line); border-radius: 14px; padding: 1.3rem; background: white; }
-.guide-card.wide { grid-column: 1 / -1; }
-.guide-index { position: absolute; right: 1rem; top: 1rem; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--ink); color: var(--lime); font-size: .7rem; font-weight: 800; }
-.guide-card h3 { margin: 0 2rem 1rem 0; font: 500 1.35rem Georgia, serif; }
-.guide-card ul { margin: 0; padding-left: 1.1rem; color: var(--muted); font-size: .82rem; line-height: 1.65; }
-.example-box { border: 1px dashed #aca698; padding: 1rem; background: #f8f5ee; }
-.example-box strong { display: block; margin-bottom: .35rem; color: var(--accent-dark); font-size: .7rem; letter-spacing: .1em; }
-.example-box p { margin: .3rem 0; color: #55564f; font: italic .9rem/1.55 Georgia, serif; }
-
-.form-grid { display: grid; gap: 1.3rem; }
-.form-grid.two-columns { grid-template-columns: minmax(0, 1.2fr) minmax(240px, .8fr); }
-.form-stack { display: grid; gap: 1rem; }
-.field { display: grid; gap: .48rem; }
-.field > span { font-size: .78rem; font-weight: 750; }
-.field b { color: var(--accent-dark); }
-.field small { color: var(--muted); font-size: .69rem; }
-.field input, .field textarea, .field select { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: .78rem .85rem; background: white; color: var(--ink); outline: none; resize: vertical; transition: border .15s, box-shadow .15s; }
-.field input:focus, .field textarea:focus, .field select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px color-mix(in srgb, var(--blue) 14%, transparent); }
-.upload-field { display: flex; min-height: 310px; align-items: center; justify-content: center; flex-direction: column; gap: .45rem; border: 1.5px dashed #9c978c; border-radius: 14px; padding: 1rem; background: #f0ece3; color: var(--muted); text-align: center; cursor: pointer; overflow: hidden; }
-.upload-field.compact { min-height: 250px; }
-.upload-field.dragging { border-color: var(--accent); background: #fff0e8; }
-.upload-field strong { color: var(--ink); font-size: .85rem; }
-.upload-field > span:last-of-type { font-size: .7rem; }
-.upload-icon { display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid var(--ink); border-radius: 50%; color: var(--ink); font-size: 1.3rem; }
-.upload-field img { width: 100%; height: 100%; min-height: 250px; object-fit: cover; border-radius: 8px; }
-.editorial-tip { margin-top: 1.2rem; border: 1px solid var(--line); border-radius: 13px; padding: 1.1rem; background: #e9eef9; }
-.editorial-tip strong { font-size: .82rem; }
-.editorial-tip ol { margin: .6rem 0 0; padding-left: 1.2rem; color: var(--muted); font-size: .78rem; line-height: 1.65; }
-
-.works-list { display: grid; gap: 1rem; }
-.work-editor { border: 1px solid var(--line); border-radius: 15px; padding: 1.25rem; background: white; }
-.work-editor-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
-.work-editor-header strong { font: 600 1rem Georgia, serif; }
-.work-actions { display: flex; gap: .3rem; }
-.work-actions button { border: 1px solid var(--line); border-radius: 999px; padding: .3rem .55rem; background: transparent; font-size: .68rem; cursor: pointer; }
-.work-actions button:hover { border-color: var(--ink); }
-.work-actions .danger { color: #a22819; }
-.work-editor-grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 1rem; }
-.work-fields { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
-.work-fields .wide { grid-column: 1 / -1; }
-.work-image { min-height: 240px; }
-.empty-state { padding: 3rem 1rem; border: 1px dashed var(--line); border-radius: 14px; text-align: center; color: var(--muted); }
-.empty-state > span { font-size: 2.5rem; }
-.empty-state h3 { margin: .5rem 0; color: var(--ink); font: 500 1.5rem Georgia, serif; }
-.empty-state p { margin: 0 0 1rem; font-size: .78rem; }
-
-.cv-sections { display: grid; gap: 1.1rem; }
-.cv-section { border-bottom: 1px solid var(--line); padding-bottom: 1.1rem; }
-.cv-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: .65rem; }
-.cv-section-header h3 { margin: 0; font: 500 1.2rem Georgia, serif; }
-.cv-row { display: grid; grid-template-columns: 95px 1fr 42px; gap: .55rem; margin-top: .5rem; }
-.cv-row input { min-width: 0; border: 1px solid var(--line); border-radius: 8px; padding: .65rem; }
-.cv-row button { border: 0; background: transparent; color: #a22819; cursor: pointer; }
-.cv-empty { margin: .35rem 0; color: var(--muted); font-size: .74rem; }
-
-.reference-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
-.reference-card { display: flex; min-height: 250px; flex-direction: column; border: 1px solid var(--line); border-radius: 14px; padding: 1.2rem; background: white; }
-.reference-card .reference-type { width: max-content; border: 1px solid var(--line); border-radius: 999px; padding: .28rem .55rem; font-size: .6rem; font-weight: 800; letter-spacing: .1em; }
-.reference-card h3 { margin: 1rem 0 .3rem; font: 500 1.35rem/1.1 Georgia, serif; }
-.reference-card .reference-source { color: var(--muted); font-size: .7rem; }
-.reference-card dl { display: grid; grid-template-columns: 80px 1fr; gap: .45rem; margin: 1rem 0; font-size: .7rem; line-height: 1.4; }
-.reference-card dt { color: var(--muted); }
-.reference-card dd { margin: 0; }
-.reference-card a { margin-top: auto; color: var(--blue); font-size: .75rem; font-weight: 700; }
-
-.live-preview { position: sticky; top: 72px; height: calc(100vh - 72px); overflow-y: auto; padding: 24px 22px; border-left: 1px solid var(--line); background: #ded7ca; }
-.preview-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: .75rem; font-size: .6rem; font-weight: 800; letter-spacing: .1em; }
-.preview-toolbar i { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #36a662; }
-.mini-document { aspect-ratio: 1 / 1.414; display: flex; flex-direction: column; padding: 22px; background: #f6f1e7; color: #181818; box-shadow: var(--shadow); overflow: hidden; }
-.mini-meta, .mini-footer { display: flex; justify-content: space-between; font: 700 .52rem/1 ui-monospace, monospace; letter-spacing: .08em; }
-.mini-art { display: grid; place-items: center; flex: 1; min-height: 180px; margin: 18px 0; background: linear-gradient(145deg, #e26043, #771e2b); color: rgba(255,255,255,.7); font: 700 3rem Georgia, serif; overflow: hidden; }
-.mini-art img { width: 100%; height: 100%; object-fit: cover; }
-.mini-copy p { margin: 0 0 .35rem; color: var(--accent-dark); font-size: .52rem; font-weight: 800; letter-spacing: .12em; }
-.mini-copy h2 { margin: 0 0 .2rem; font: 500 1.35rem/1 Georgia, serif; }
-.mini-copy strong { display: block; font-size: .68rem; text-transform: uppercase; }
-.mini-copy > span { display: block; margin-top: .3rem; color: var(--muted); font-size: .52rem; }
-.mini-footer { margin-top: 18px; padding-top: 10px; border-top: 1px solid currentColor; }
-.preview-caption { color: #66625b; font-size: .68rem; line-height: 1.5; }
-.template-editorial .mini-art { order: -1; margin: -22px -22px 18px; min-height: 240px; background: #173577; }
-.template-editorial { background: #ff6544; color: #171717; }
-.template-editorial .mini-copy h2 { font: 900 1.55rem/1 ui-sans-serif, sans-serif; text-transform: uppercase; }
-.template-proceso { background: #d8d0c2; }
-.template-proceso .mini-art { transform: rotate(-1.5deg); border: 8px solid white; box-shadow: 3px 5px 0 rgba(0,0,0,.18); filter: grayscale(.2); }
-.template-proceso .mini-copy h2 { font-family: ui-monospace, monospace; }
-.template-catalogo { background: #111; color: #f5f5f5; }
-.template-catalogo .mini-art { background: #ddd; }
-.template-catalogo .mini-copy { display: grid; grid-template-columns: 1fr 1fr; gap: .35rem; }
-.template-catalogo .mini-copy h2 { grid-column: 1 / -1; font-family: Arial, sans-serif; }
-
-.modal { position: fixed; inset: 0; z-index: 100; overflow-y: auto; padding: 24px; background: rgba(20,18,14,.78); }
-.modal-shell { max-width: 1040px; margin: 0 auto; border-radius: 18px; background: #d8d1c4; box-shadow: var(--shadow); overflow: hidden; }
-.modal-header { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.25rem; border-bottom: 1px solid var(--line); background: rgba(248,245,238,.96); backdrop-filter: blur(12px); }
-.modal-header h2 { margin: 0; font: 500 1.5rem Georgia, serif; }
-.modal-header > div:last-child { display: flex; gap: .5rem; }
-.document-stack { display: grid; gap: 24px; justify-content: center; padding: 32px; }
-.doc-page { position: relative; width: min(100%, 760px); min-height: 980px; overflow: hidden; padding: 72px; background: #f8f4ea; color: #161616; box-shadow: 0 16px 42px rgba(25,20,14,.13); }
-.doc-page .page-label { margin: 0 0 2rem; color: var(--accent-dark); font: 800 .65rem/1 ui-monospace, monospace; letter-spacing: .16em; text-transform: uppercase; }
-.doc-page h1 { max-width: 600px; margin: 0; font: 500 4.7rem/.92 Georgia, serif; letter-spacing: -.05em; }
-.doc-page h2 { margin: 0 0 1.2rem; font: 500 2.5rem/1 Georgia, serif; }
-.doc-page p { white-space: pre-wrap; font: 400 1rem/1.75 Georgia, serif; }
-.doc-page .cover-image { max-width: none; width: calc(100% + 144px); height: 500px; margin: 42px -72px 0; object-fit: cover; }
-.doc-page .cover-bottom { position: absolute; left: 72px; right: 72px; bottom: 60px; display: flex; justify-content: space-between; border-top: 1px solid currentColor; padding-top: 1rem; font-size: .72rem; text-transform: uppercase; }
-.doc-page .work-page-image { width: 100%; max-height: 640px; object-fit: contain; background: transparent; }
-.doc-page .work-meta { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-top: 1.4rem; }
-.doc-page .work-meta h2 { font-size: 2rem; }
-.doc-page .work-meta p { margin: .2rem 0; font: 400 .8rem/1.5 ui-sans-serif, sans-serif; }
-.doc-page .work-description { grid-column: 1 / -1; border-top: 1px solid #bbb; padding-top: 1rem; }
-.doc-page .cv-block { margin: 1.3rem 0; }
-.doc-page .cv-block h3 { margin: 0 0 .6rem; font: 600 1rem Georgia, serif; }
-.doc-page .cv-entry { display: grid; grid-template-columns: 70px 1fr; gap: 1rem; margin: .35rem 0; font-size: .78rem; }
-.doc-page .contact-list { display: grid; gap: 1rem; margin-top: 3rem; font: 600 1.2rem/1.3 ui-sans-serif, sans-serif; }
-.doc-page.template-editorial { background: #ff6544; }
-.doc-page.template-editorial h1, .doc-page.template-editorial h2 { font-family: Arial Black, Arial, sans-serif; text-transform: uppercase; }
-.doc-page.template-proceso { background: #d8d0c2; }
-.doc-page.template-proceso h1, .doc-page.template-proceso h2 { font-family: ui-monospace, monospace; }
-.doc-page.template-proceso .cover-image, .doc-page.template-proceso .work-page-image { border: 14px solid white; transform: rotate(-1deg); box-shadow: 5px 8px 0 rgba(0,0,0,.16); }
-.doc-page.template-catalogo { background: #111; color: white; }
-.doc-page.template-catalogo h1, .doc-page.template-catalogo h2 { font-family: Arial, sans-serif; }
-.doc-page.template-catalogo .page-label { color: #a9d8e8; }
-
-.toast { position: fixed; right: 1.2rem; bottom: 1.2rem; z-index: 160; max-width: 330px; border-radius: 10px; padding: .85rem 1rem; background: var(--ink); color: white; font-size: .78rem; opacity: 0; transform: translateY(12px); pointer-events: none; transition: .2s ease; }
-.toast.show { opacity: 1; transform: none; }
-
-#printArea { display: none; }
-
-@media screen and (max-width: 1180px) {
-  .app-shell { grid-template-columns: 215px minmax(0, 1fr); }
-  .live-preview { display: none; }
-  .choice-grid.purposes { grid-template-columns: repeat(3, 1fr); }
+@media screen and (max-width: 980px) {
+  .modules { grid-template-columns: 1fr 1fr; }
 }
-
 @media screen and (max-width: 820px) {
-  .topbar { padding: 0 14px; }
-  .menu-button { display: block; }
-  .brand { min-width: 0; }
-  .brand small, .save-status, .top-actions .ghost { display: none; }
-  .app-shell { display: block; }
-  .sidebar { position: fixed; inset: 72px auto 0 0; z-index: 40; width: 280px; height: calc(100vh - 72px); transform: translateX(-102%); transition: transform .22s ease; box-shadow: 15px 0 40px rgba(0,0,0,.15); }
-  .sidebar.open { transform: none; }
-  .workspace { padding: 40px 20px 70px; }
-  .panel-heading h2 { font-size: clamp(2.2rem, 11vw, 4rem); }
-  .choice-grid.disciplines { grid-template-columns: repeat(2, 1fr); }
-  .choice-grid.purposes, .template-grid { grid-template-columns: repeat(2, 1fr); }
-  .guide-layout, .form-grid.two-columns, .work-editor-grid { grid-template-columns: 1fr; }
-  .inline-heading { align-items: flex-start; flex-direction: column; }
-  .reference-grid { grid-template-columns: 1fr; }
-  .doc-page { min-height: 760px; padding: 42px; }
-  .doc-page h1 { font-size: 3.2rem; }
-  .doc-page .cover-image { width: calc(100% + 84px); height: 390px; margin: 30px -42px 0; }
-  .doc-page .cover-bottom { left: 42px; right: 42px; bottom: 38px; }
+  .topbar { padding: 0 16px; }
+  .layout { display: block; }
+  .sidebar { position: static; height: auto; padding: 20px 16px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .sidebar-note { display: none; }
+  .nav { grid-auto-flow: column; grid-auto-columns: max-content; overflow-x: auto; margin-top: .4rem; }
+  .current { grid-template-columns: 1fr; }
+  .cover { max-width: 180px; }
+  .current.is-empty .cover { display: none; }
 }
-
-@media screen and (max-width: 520px) {
-  .brand strong { font-size: .85rem; }
-  .top-actions .button.primary { padding-inline: .8rem; }
-  .section-heading { align-items: stretch; flex-direction: column; }
-  .search-field input { width: 100%; }
-  .choice-grid.disciplines, .choice-grid.purposes, .template-grid { grid-template-columns: 1fr 1fr; }
-  .choice-card { min-height: 104px; }
-  .work-fields { grid-template-columns: 1fr; }
-  .work-fields .wide { grid-column: auto; }
-  .cv-row { grid-template-columns: 72px 1fr 32px; }
-  .modal { padding: 0; }
-  .modal-shell { min-height: 100vh; border-radius: 0; }
-  .modal-header { align-items: flex-start; }
-  .document-stack { padding: 16px; }
-  .doc-page { min-height: 660px; padding: 28px; }
-  .doc-page h1 { font-size: 2.5rem; }
-  .doc-page .cover-image { width: calc(100% + 56px); height: 320px; margin: 26px -28px 0; }
-  .doc-page .cover-bottom { left: 28px; right: 28px; bottom: 26px; }
+@media screen and (max-width: 560px) {
+  .modules { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: 1fr 1fr 1fr; }
+  .brand small { display: none; }
 }
-
-@page { size: A4; margin: 0; }
-@media print {
-  html, body { background: var(--print-bg, white) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .no-print, .app-shell, .toast, .missing { display: none !important; }
-  #printArea { display: block !important; }
-  /* Las páginas crecen si el contenido no cabe: nunca se recorta texto en el PDF. */
-  #printArea .doc-page { width: 210mm; min-height: 297mm; height: auto; overflow: visible; padding: 18mm; page-break-after: always; break-after: page; box-shadow: none; -webkit-box-decoration-break: clone; box-decoration-break: clone; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  #printArea .doc-page:last-child { page-break-after: auto; break-after: auto; }
-  #printArea .doc-page h1 { font-size: 3.6rem; }
-  #printArea .doc-page .cover-image { width: calc(100% + 36mm); height: 130mm; margin: 12mm -18mm 0; }
-  #printArea .doc-page .cover-bottom { left: 18mm; right: 18mm; bottom: 16mm; }
-  #printArea .doc-page .work-page-image { max-height: 170mm; }
-  #printArea .doc-page .portrait-image { max-height: 90mm; }
-  #printArea .cv-entry, #printArea .work-meta, #printArea img { break-inside: avoid; }
-}
-
-.missing { color: #a22819; font-style: italic; }
-.doc-page .portrait-image { width: auto; max-width: 60%; max-height: 420px; margin-top: 2rem; object-fit: contain; }
-.page-warning { margin: -12px 0 0; color: #f8f4ea; font-size: .72rem; text-align: center; }
-.review-box { margin: 24px 32px 0; border-radius: 12px; padding: 1rem 1.2rem; background: #fff4ef; border-left: 3px solid var(--accent); font-size: .8rem; line-height: 1.5; }
-.review-box.ok { background: #eef8e6; border-left-color: #36a662; }
-.review-box ul { margin: .4rem 0 0; padding-left: 1.1rem; }
-.sidebar-reset { margin-top: 1rem; }
-
-.prototype-badge{border:1px solid var(--line);border-radius:999px;padding:.35rem .6rem;color:var(--muted);font-size:.6rem;font-weight:800;letter-spacing:.09em}
-</style>
+  </style>
 </head>
 <body>
-  <a class="skip-link no-print" href="#workspace">Saltar al editor</a>
-  <header class="topbar no-print">
-    <button class="menu-button" id="menuButton" type="button" aria-label="Abrir navegación" aria-expanded="false">☰</button>
-    <a class="brand" href="#configurar" aria-label="ArtDossier Studio, inicio"><span class="brand-mark" aria-hidden="true">C.</span><span><strong>ArtDossier</strong><small>STUDIO / CACHIVARTE</small></span></a>
-    <div class="top-actions">
-      <span class="save-status" id="saveStatus" role="status">Listo para crear</span><span class="prototype-badge" title="Tus datos se guardan solo en este navegador">BETA · LOCAL</span>
-      <button class="button ghost" id="importButton" type="button">Importar</button>
-      <input id="importInput" type="file" accept="application/json,.json" hidden>
-      <button class="button ghost" id="exportButton" type="button">Respaldo JSON</button>
-      <button class="button primary" id="previewButton" type="button">Vista previa</button>
-    </div>
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="Panel de Cachivarte, inicio"><span class="brand-mark" aria-hidden="true">C.</span><span><strong>Cachivarte</strong><small>PANEL DEL ESTUDIO</small></span></a>
+    <span class="badge" title="Tus proyectos se guardan solo en este navegador">PRIVADO · LOCAL</span>
   </header>
-  <div class="app-shell">
-    <aside class="sidebar no-print" id="sidebar" aria-label="Secciones del dossier">
-      <div class="sidebar-intro"><p class="eyebrow">TU PROYECTO</p><h1>Diseña tu historia artística.</h1><p>Aprende, organiza tu obra y crea un documento coherente con tu práctica.</p></div>
-      <nav class="section-nav" aria-label="Editor">
-        <button class="nav-button active" type="button" data-tab="configurar"><span>01</span> Configurar</button>
-        <button class="nav-button" type="button" data-tab="aprender"><span>02</span> Aprender</button>
-        <button class="nav-button" type="button" data-tab="portada"><span>03</span> Portada</button>
-        <button class="nav-button" type="button" data-tab="statement"><span>04</span> Statement</button>
-        <button class="nav-button" type="button" data-tab="bio"><span>05</span> Biografía</button>
-        <button class="nav-button" type="button" data-tab="obras"><span>06</span> Obras</button>
-        <button class="nav-button" type="button" data-tab="cv"><span>07</span> Currículum</button>
-        <button class="nav-button" type="button" data-tab="contacto"><span>08</span> Contacto</button>
-        <button class="nav-button" type="button" data-tab="referentes"><span>09</span> Referentes</button>
+  <div class="layout">
+    <aside class="sidebar" aria-label="Módulos">
+      <p class="eyebrow">MÓDULOS</p>
+      <nav class="nav" aria-label="Panel">
+        <a href="./" aria-current="page">Inicio</a>
+        <a href="artdossier/">ArtDossier Studio <small>PRESENTAR</small></a>
+        <span aria-disabled="true">Mi estudio artístico <small>PRONTO</small></span>
+        <span aria-disabled="true">Convocatorias <small>PRONTO</small></span>
       </nav>
-      <div class="sidebar-note"><strong>Tu voz, tus datos</strong><p>Los ejemplos son ficticios y nunca se mezclan con tu dossier. Tu proyecto se guarda solo en este navegador: descarga un respaldo JSON con frecuencia.</p></div>
-      <button class="text-button sidebar-reset" id="resetButton" type="button">Empezar un proyecto nuevo</button>
+      <div class="sidebar-note"><strong>Tus datos, en tu equipo</strong><p>Nada se envía a internet. Los proyectos quedan guardados en este navegador; descarga respaldos desde cada módulo.</p></div>
     </aside>
-    <main class="workspace" id="workspace" tabindex="-1">
-      <section class="panel active" id="tab-configurar" aria-labelledby="configurarTitle">
-        <div class="panel-heading"><p class="eyebrow">PRIMER PASO</p><h2 id="configurarTitle">¿Qué vas a presentar?</h2><p>La disciplina y el propósito adaptan las recomendaciones. Puedes cambiarlos sin perder información.</p></div>
-        <div class="section-heading"><div><span class="section-number">01</span><h3>Disciplina principal</h3></div><label class="search-field"><span class="sr-only">Buscar disciplina</span><input id="disciplineSearch" type="search" placeholder="Buscar disciplina…" autocomplete="off"></label></div>
-        <div class="choice-grid disciplines" id="disciplineGrid"></div>
-        <label class="field custom-discipline"><span>Otra disciplina o práctica multidisciplinaria</span><input id="customDiscipline" type="text" maxlength="100" placeholder="Ej. arte textil y performance"></label>
-        <div class="section-heading spaced"><div><span class="section-number">02</span><h3>Propósito del dossier</h3></div></div>
-        <div class="choice-grid purposes" id="purposeGrid"></div>
-        <div class="section-heading spaced"><div><span class="section-number">03</span><h3>Estilo editorial</h3></div></div>
-        <div class="template-grid" id="templateGrid"></div>
-        <div class="recommendation" id="recommendation" aria-live="polite"></div>
-        <button class="button primary large" id="continueButton" type="button">Continuar con la guía <span aria-hidden="true">→</span></button>
-      </section>
-      <section class="panel" id="tab-aprender" aria-labelledby="aprenderTitle" hidden>
-        <div class="panel-heading"><p class="eyebrow">GUÍA ADAPTATIVA</p><h2 id="aprenderTitle">Antes de diseñar, define la intención.</h2><p id="guideIntro">Selecciona una disciplina y un propósito para ver recomendaciones específicas.</p></div>
-        <div class="guide-layout">
-          <article class="guide-card"><span class="guide-index">A</span><h3>Qué debe demostrar</h3><ul id="guideFocus"></ul></article>
-          <article class="guide-card"><span class="guide-index">B</span><h3>Checklist editorial</h3><ul id="guideChecklist"></ul></article>
-          <article class="guide-card wide"><span class="guide-index">C</span><h3>Ejemplo didáctico original</h3><div id="guideExample" class="example-box"></div></article>
-        </div>
-        <button class="button primary large" type="button" data-go="portada">Empezar a crear <span aria-hidden="true">→</span></button>
-      </section>
-      <section class="panel" id="tab-portada" aria-labelledby="portadaTitle" hidden>
-        <div class="panel-heading"><p class="eyebrow">CREAR / PORTADA</p><h2 id="portadaTitle">La primera impresión, sin adornar tu trayectoria.</h2><p>Usa tu nombre, el título real del proyecto y una imagen representativa.</p></div>
-        <div class="form-grid two-columns">
-          <div class="form-stack">
-            <label class="field"><span>Nombre o firma artística <b aria-hidden="true">*</b></span><input id="artistName" type="text" maxlength="100" autocomplete="name" placeholder="Tu nombre artístico"></label>
-            <label class="field"><span>Título profesional</span><input id="professionalTitle" type="text" maxlength="100" placeholder="Ej. Artista visual"></label>
-            <label class="field"><span>Título del dossier o serie</span><input id="dossierTitle" type="text" maxlength="120" placeholder="Obras seleccionadas 2024–2026"></label>
-            <label class="field"><span>Ciudad / país (opcional)</span><input id="city" type="text" maxlength="100" autocomplete="address-level2" placeholder="Ciudad, país"></label>
+    <main id="contenido" tabindex="-1">
+      <div class="wrap">
+        <p class="eyebrow">PANEL DE CACHIVARTE</p>
+        <h1 id="greeting">Tu estudio, en un solo lugar.</h1>
+        <p class="lead">Presenta tu obra, organiza tu práctica y prepara postulaciones. Cada módulo es independiente: lo que es privado no se mezcla con lo que publicas.</p>
+
+        <h2>Dossier en curso</h2>
+        <section class="current" aria-live="polite" aria-label="Dossier en curso">
+          <div class="cover" aria-hidden="true">
+            <span class="cover-meta" id="coverMeta">ARTDOSSIER</span>
+            <div class="cover-art" id="coverArt"><span>AD</span></div>
+            <span class="cover-title" id="coverTitle">Obras seleccionadas</span>
           </div>
-          <div><label class="upload-field" id="coverDrop"><input id="coverInput" type="file" accept="image/jpeg,image/png,image/webp" hidden><span class="upload-icon" aria-hidden="true">＋</span><strong>Imagen de portada</strong><span>JPG, PNG o WEBP · máximo 20 MB</span><img id="coverPreview" alt="Vista previa de la imagen de portada" hidden></label><button class="text-button" id="removeCover" type="button" hidden>Quitar imagen</button></div>
+          <div class="current-body">
+            <div id="projectEmpty" class="empty">
+              <h3>Aún no has empezado un dossier</h3>
+              <p>Elige tu disciplina y propósito; la guía te acompaña sección por sección y al final exportas un PDF listo para enviar.</p>
+            </div>
+            <div id="projectInfo" hidden>
+              <p class="eyebrow" id="projectDiscipline"></p>
+              <h3 id="projectTitle"></h3>
+              <p class="sub" id="projectSaved"></p>
+              <div class="stats">
+                <div class="stat"><b id="statWorks">0</b><span>obras</span></div>
+                <div class="stat"><b id="statImages">0</b><span>con imagen</span></div>
+                <div class="stat"><b id="statCv">0</b><span>entradas de CV</span></div>
+              </div>
+              <p class="progress-label"><span>Esenciales completos</span><span id="progressText">0 de 0</span></p>
+              <div class="progress" role="progressbar" aria-label="Esenciales completos" aria-valuemin="0" aria-valuemax="100" id="progressBar"><i id="progressFill"></i></div>
+              <ul class="todo" id="todoList"></ul>
+            </div>
+            <div class="actions">
+              <a class="button primary" id="openDossier" href="artdossier/">Empezar mi dossier</a>
+              <a class="button ghost" id="previewDossier" href="artdossier/#vista-previa" hidden>Ver vista previa</a>
+            </div>
+          </div>
+        </section>
+
+        <div class="modules">
+          <a class="module" href="artdossier/">
+            <span class="tag on">DISPONIBLE</span>
+            <h3>ArtDossier Studio</h3>
+            <span class="verb">PRESENTAR</span>
+            <p>Dossier profesional por disciplina y propósito: portada, statement, biografía, obras, CV y contacto. Exporta a PDF.</p>
+            <span class="go">Abrir →</span>
+          </a>
+          <div class="module soon" aria-disabled="true">
+            <span class="tag off">PRÓXIMAMENTE</span>
+            <h3>Mi estudio artístico</h3>
+            <span class="verb">GESTIONAR</span>
+            <p>Inventario de obras, calculadora de precios, ventas, certificados y finanzas básicas. Privado por defecto, nunca entra al PDF del dossier.</p>
+          </div>
+          <div class="module soon" aria-disabled="true">
+            <span class="tag off">PRÓXIMAMENTE</span>
+            <h3>Convocatorias</h3>
+            <span class="verb">POSTULAR</span>
+            <p>Seguimiento de fondos, residencias y salones con requisitos verificados en la fuente oficial, plazos y checklist por postulación.</p>
+          </div>
         </div>
-      </section>
-      <section class="panel" id="tab-statement" aria-labelledby="statementTitle" hidden>
-        <div class="panel-heading"><p class="eyebrow">CREAR / STATEMENT</p><h2 id="statementTitle">Explica las preguntas que sostienen tu obra.</h2><p>No existe una longitud universal. Ajusta el texto a cada convocatoria y evita afirmaciones que no puedas respaldar.</p></div>
-        <label class="field"><span>Statement del artista</span><textarea id="statement" rows="13" maxlength="5000" placeholder="¿Qué investigas? ¿Cómo se relacionan materiales, procesos y contexto?"></textarea><small id="statementCount">0 palabras</small></label>
-        <aside class="editorial-tip"><strong>Una estructura útil</strong><ol><li>Pregunta o impulso central.</li><li>Materiales y decisiones de proceso.</li><li>Relación con el contexto o el público.</li></ol></aside>
-      </section>
-      <section class="panel" id="tab-bio" aria-labelledby="bioTitle" hidden>
-        <div class="panel-heading"><p class="eyebrow">CREAR / BIOGRAFÍA</p><h2 id="bioTitle">Trayectoria verificable, escrita con claridad.</h2><p>Incluye solo formación, exposiciones o hitos reales. Una práctica emergente no necesita fingir credenciales.</p></div>
-        <div class="form-grid two-columns"><label class="field"><span>Biografía</span><textarea id="bio" rows="12" maxlength="4000" placeholder="Escribe en tercera persona y prioriza los hechos relevantes para este dossier."></textarea><small id="bioCount">0 palabras</small></label><div><label class="upload-field compact" id="portraitDrop"><input id="portraitInput" type="file" accept="image/jpeg,image/png,image/webp" hidden><span class="upload-icon" aria-hidden="true">＋</span><strong>Retrato opcional</strong><span>Usa una foto propia o con permiso.</span><img id="portraitPreview" alt="Vista previa del retrato" hidden></label><button class="text-button" id="removePortrait" type="button" hidden>Quitar retrato</button></div></div>
-      </section>
-      <section class="panel" id="tab-obras" aria-labelledby="obrasTitle" hidden>
-        <div class="panel-heading inline-heading"><div><p class="eyebrow">CREAR / OBRAS</p><h2 id="obrasTitle">Construye una secuencia, no un inventario.</h2><p>Empieza con una obra fuerte y ordena el resto para mostrar relaciones, ritmo y escala.</p></div><button class="button primary" id="addWorkButton" type="button">＋ Añadir obra</button></div>
-        <div id="worksList" class="works-list"></div><div id="worksEmpty" class="empty-state"><span aria-hidden="true">□</span><h3>Aún no hay obras</h3><p>Añade la primera pieza para comenzar la secuencia editorial.</p><button class="button ghost" type="button" data-add-work>Añadir obra</button></div>
-      </section>
-      <section class="panel" id="tab-cv" aria-labelledby="cvTitle" hidden>
-        <div class="panel-heading"><p class="eyebrow">CREAR / CURRÍCULUM</p><h2 id="cvTitle">Añade únicamente información real.</h2><p>Las filas comienzan vacías. Si una categoría no aplica, déjala fuera del documento.</p></div><div id="cvSections" class="cv-sections"></div>
-      </section>
-      <section class="panel" id="tab-contacto" aria-labelledby="contactoTitle" hidden>
-        <div class="panel-heading"><p class="eyebrow">CREAR / CONTACTO</p><h2 id="contactoTitle">Haz que sea fácil continuar la conversación.</h2><p>Comparte solo los datos que quieras publicar en el PDF.</p></div>
-        <div class="form-grid two-columns">
-          <label class="field"><span>Email profesional</span><input id="email" type="email" maxlength="200" autocomplete="email" placeholder="tu@email.com"></label><label class="field"><span>Teléfono / WhatsApp</span><input id="phone" type="tel" maxlength="50" autocomplete="tel" placeholder="+56 …"></label><label class="field"><span>Sitio web</span><input id="website" type="url" maxlength="300" autocomplete="url" placeholder="https://tuportafolio.com"></label><label class="field"><span>Instagram</span><input id="instagram" type="text" maxlength="100" placeholder="@usuario"></label><label class="field"><span>Galería representante (si aplica)</span><input id="gallery" type="text" maxlength="150" placeholder="Nombre real de la galería"></label><label class="field"><span>Estudio / taller</span><input id="studio" type="text" maxlength="150" placeholder="Ciudad o dirección pública"></label>
-        </div>
-      </section>
-      <section class="panel" id="tab-referentes" aria-labelledby="referentesTitle" hidden>
-        <div class="panel-heading"><p class="eyebrow">APRENDER / REFERENTES</p><h2 id="referentesTitle">Fuentes para documentar con criterio.</h2><p>Esta biblioteca enlaza recursos externos y no reproduce imágenes ni obras de terceros.</p></div><div class="reference-grid" id="referenceGrid"></div>
-      </section>
+      </div>
     </main>
-    <aside class="live-preview no-print" aria-label="Vista previa rápida">
-      <div class="preview-toolbar"><span>VISTA PREVIA <i></i> EN VIVO</span><button class="text-button" id="printButton" type="button">Imprimir / PDF</button></div>
-      <div class="mini-document template-museo" id="miniDocument"><div class="mini-meta"><span>ARTDOSSIER</span><span id="miniYear"></span></div><div class="mini-art" id="miniArt"><span aria-hidden="true">AD</span></div><div class="mini-copy"><p id="miniDiscipline">DISCIPLINA</p><h2 id="miniTitle">Obras seleccionadas</h2><strong id="miniArtist">TU NOMBRE</strong><span id="miniCity">DOSSIER ARTÍSTICO</span></div><div class="mini-footer"><span id="miniPurpose">PRESENTACIÓN GENERAL</span><span>01</span></div></div>
-      <p class="preview-caption">La vista completa incluye portada, textos, obras, CV y contacto.</p><button class="button primary full" id="openPreviewButton" type="button">Abrir dossier completo</button>
-    </aside>
   </div>
-  <div class="modal no-print" id="previewModal" role="dialog" aria-modal="true" aria-labelledby="previewTitle" hidden><div class="modal-shell"><header class="modal-header"><div><p class="eyebrow">VISTA PREVIA</p><h2 id="previewTitle">Dossier completo</h2></div><div><button class="button ghost" id="modalPrintButton" type="button">Imprimir / PDF</button><button class="icon-button" id="closePreviewButton" type="button" aria-label="Cerrar vista previa">×</button></div></header><div class="review-box" id="reviewBox" aria-live="polite"></div><div class="document-stack" id="previewPages"></div></div></div>
-  <div id="printArea" aria-hidden="true"></div><div class="toast no-print" id="toast" role="status" aria-live="polite"></div>
   <script>
 "use strict";
-const DISCIPLINES = [
-  {
-    id: 'painting', icon: '◒', label: 'Pintura y dibujo', short: 'Obra bidimensional',
-    focus: ['Coherencia entre series y piezas individuales', 'Calidad cromática y escala relativa', 'Técnica, soporte y año en cada ficha'],
-    checklist: ['Fotografía frontal sin distorsión', 'Detalle si la materialidad es importante', 'Dimensiones en alto × ancho × profundidad', 'Indicar polípticos, series y disponibilidad con claridad'],
-    example: { title: 'Ejemplo ficticio · “Umbral mineral”', body: 'Serie de seis pinturas que estudia cómo la luz altera la percepción de superficies geológicas. Cada ficha indica pigmento, soporte, dimensiones y año; dos detalles muestran la textura sin sustituir la vista completa.' }
-  },
-  {
-    id: 'photography', icon: '◉', label: 'Fotografía', short: 'Series y ediciones',
-    focus: ['Secuencia visual y lógica de serie', 'Sistema de edición, soporte e impresión', 'Contexto sin sobreexplicar la imagen'],
-    checklist: ['Indicar edición y pruebas de artista', 'Precisar tipo de impresión y montaje', 'Mantener consistencia de color', 'Separar serie, pieza y detalle'],
-    example: { title: 'Ejemplo ficticio · “Latencia doméstica”', body: 'Ensayo fotográfico de doce imágenes sobre gestos cotidianos. El dossier presenta ocho piezas en secuencia, una nota de proceso y fichas con pigmento, papel, edición y tamaño final.' }
-  },
-  {
-    id: 'sculpture', icon: '◆', label: 'Escultura e instalación', short: 'Escala, espacio y montaje',
-    focus: ['Relación entre cuerpo, obra y espacio', 'Materiales, peso y requerimientos de montaje', 'Vistas generales y detalles constructivos'],
-    checklist: ['Incluir referencia de escala', 'Añadir planta o esquema cuando aporte claridad', 'Documentar montaje y desmontaje', 'Diferenciar medidas variables y fijas'],
-    example: { title: 'Ejemplo ficticio · “Peso de la distancia”', body: 'Instalación modular de madera recuperada y acero. El dossier combina vista general, detalle de unión, planta de montaje y una ficha técnica que separa dimensiones mínimas, peso y necesidades del espacio.' }
-  },
-  {
-    id: 'performance', icon: '↗', label: 'Performance y acción', short: 'Tiempo, cuerpo y registro',
-    focus: ['Regla o partitura de la acción', 'Duración, espacio y relación con el público', 'Diferencia entre obra y documentación'],
-    checklist: ['Indicar duración y condiciones de presentación', 'Describir qué elementos se conservan', 'Acreditar fotografía y video', 'Enlazar registro completo solo con permiso'],
-    example: { title: 'Ejemplo ficticio · “Respirar el borde”', body: 'Acción de 18 minutos para un espacio de tránsito. Una página explica la partitura, otra muestra tres fotogramas acreditados y la ficha aclara que el video es documentación, no una obra independiente.' }
-  },
-  {
-    id: 'digital', icon: '⌁', label: 'Arte digital y nuevos medios', short: 'Sistema y experiencia',
-    focus: ['Experiencia del público, no solo capturas', 'Dependencias técnicas y longevidad', 'Rol del software, datos y hardware'],
-    checklist: ['Indicar formato, versión y duración', 'Añadir diagrama técnico legible', 'Explicar interacción y accesibilidad', 'Separar edición, certificado y requisitos de exhibición'],
-    example: { title: 'Ejemplo ficticio · “Jardín de señales”', body: 'Instalación audiovisual generativa. El dossier reúne captura, diagrama de señal, video corto de interacción y una ficha que identifica software, hardware recomendado y comportamiento sin conexión.' }
-  },
-  {
-    id: 'ceramics', icon: '∪', label: 'Cerámica y oficios', short: 'Materia, proceso y función',
-    focus: ['Relación entre técnica, forma y uso', 'Proceso de cocción y acabados', 'Series, piezas únicas y escalabilidad'],
-    checklist: ['Precisar pasta, esmalte y temperatura si es relevante', 'Mostrar perfil, escala y base', 'Aclarar uso funcional o escultórico', 'Indicar variaciones esperables en series'],
-    example: { title: 'Ejemplo ficticio · “Archivo de mareas”', body: 'Conjunto de piezas de gres construidas a mano. La presentación alterna familias formales, detalles de esmalte y una ficha que identifica pasta, cocción, medidas y carácter de pieza única.' }
-  },
-  {
-    id: 'music', icon: '♪', label: 'Música y arte sonoro', short: 'Escucha, espacio y créditos',
-    focus: ['Concepto auditivo y forma temporal', 'Contexto de escucha o interpretación', 'Créditos, duración y requerimientos'],
-    checklist: ['Enlazar audio alojado con autorización', 'Identificar intérpretes y colaboradores', 'Añadir duración y formato', 'Explicar sistema de reproducción o partitura'],
-    example: { title: 'Ejemplo ficticio · “Frecuencias del patio”', body: 'Pieza sonora de ocho canales compuesta a partir de resonancias arquitectónicas. El dossier incluye mapa de altavoces, fragmento de escucha, duración y créditos completos.' }
-  },
-  {
-    id: 'multidisciplinary', icon: '✳', label: 'Multidisciplinaria', short: 'Cruces de lenguaje',
-    focus: ['Hilo conceptual entre medios distintos', 'Qué función cumple cada lenguaje', 'Lectura clara de proyectos complejos'],
-    checklist: ['Organizar por proyecto antes que por técnica', 'Usar subtítulos consistentes', 'Mostrar vistas generales y evidencias específicas', 'Evitar repetir el mismo texto en cada formato'],
-    example: { title: 'Ejemplo ficticio · “Manual para una nube”', body: 'Proyecto que reúne dibujo, instalación y audio. Cada capítulo abre con la pregunta común y luego explica qué aporta cada medio, con fichas separadas y una cronología breve de desarrollo.' }
-  }
-];
+// Lee (sin modificar) el proyecto que ArtDossier guarda en este navegador.
+const DISCIPLINE_LABELS = { painting: 'Pintura y dibujo', photography: 'Fotografía', sculpture: 'Escultura e instalación', performance: 'Performance y acción', digital: 'Arte digital y nuevos medios', ceramics: 'Cerámica y oficios', music: 'Música y arte sonoro', multidisciplinary: 'Multidisciplinaria' };
+const $ = (selector) => document.querySelector(selector);
+const setText = (selector, value) => { $(selector).textContent = value; };
+const isImage = (value) => /^data:image\/(?:png|jpeg|webp);base64,/i.test(String(value || ''));
 
-const PURPOSES = [
-  { id: 'gallery', icon: '□', label: 'Galería / exposición', short: 'Coherencia y montaje', guidance: 'Prioriza una selección breve, una propuesta espacial clara y fichas técnicas completas. No supongas requisitos: confirma siempre las condiciones de cada sala.' },
-  { id: 'funding', icon: '◇', label: 'Convocatoria / fondos', short: 'Viabilidad y pertinencia', guidance: 'Relaciona objetivos, metodología, cronograma y presupuesto con las bases reales. Este dossier apoya la postulación, pero no reemplaza sus requisitos específicos.' },
-  { id: 'residency', icon: '⌂', label: 'Residencia', short: 'Proceso y contexto', guidance: 'Muestra cómo trabajas, qué quieres investigar y por qué ese contexto es pertinente. Diferencia obra terminada, proceso y propuesta futura.' },
-  { id: 'clients', icon: '＋', label: 'Clientes / encargos', short: 'Alcance y confianza', guidance: 'Facilita la lectura de servicios, materiales, escalas y proyectos comparables. No publiques datos confidenciales ni promesas de plazo sin confirmar.' },
-  { id: 'general', icon: '↗', label: 'Presentación general', short: 'Panorama flexible', guidance: 'Construye una versión base breve y adaptable. Presenta una práctica reconocible sin intentar incluir toda tu producción.' }
-];
-
-const TEMPLATES = [
-  { id: 'museo', label: 'Museo / galería', short: 'Sobria, aireada, centrada en la obra', swatch: 'swatch-museo' },
-  { id: 'editorial', label: 'Editorial creativo', short: 'Tipografía expresiva y color', swatch: 'swatch-editorial' },
-  { id: 'proceso', label: 'Proceso / bitácora', short: 'Textura, notas y materialidad', swatch: 'swatch-proceso' },
-  { id: 'catalogo', label: 'Catálogo de series', short: 'Modular, comparativa y sistemática', swatch: 'swatch-catalogo' }
-];
-
-const CV_SECTIONS = [
-  { id: 'education', label: 'Formación' },
-  { id: 'solo', label: 'Exposiciones individuales' },
-  { id: 'group', label: 'Exposiciones colectivas' },
-  { id: 'awards', label: 'Premios, becas y residencias' },
-  { id: 'collections', label: 'Colecciones' },
-  { id: 'press', label: 'Prensa y publicaciones' }
-];
-
-const REFERENCES = [
-  { type: 'LICENCIAS', title: 'About CC Licenses', author: 'Creative Commons', source: 'Creative Commons', discipline: 'Todas', observe: 'Cómo atribuir, compartir y reconocer condiciones de uso.', license: 'Contenido sujeto a los términos indicados por la fuente.', accessed: '11 nov 2026', url: 'https://creativecommons.org/share-your-work/cclicenses/' },
-  { type: 'DERECHOS', title: 'Rights Statements', author: 'RightsStatements.org', source: 'Digital Public Library of America / Europeana', discipline: 'Todas', observe: 'Vocabulario normalizado para comunicar el estado de derechos.', license: 'Ver cada declaración y su alcance.', accessed: '11 nov 2026', url: 'https://rightsstatements.org/' },
-  { type: 'DOCUMENTACIÓN', title: 'Media Art Preservation', author: 'Smithsonian American Art Museum', source: 'Smithsonian', discipline: 'Nuevos medios', observe: 'Qué información técnica ayuda a conservar obras basadas en tecnología.', license: 'Permiso de reproducción por verificar.', accessed: '11 nov 2026', url: 'https://americanart.si.edu/research/media-art' },
-  { type: 'ACCESIBILIDAD', title: 'Alternative Text', author: 'Web Accessibility Initiative', source: 'W3C', discipline: 'Todas', observe: 'Cómo describir imágenes de manera útil según su función.', license: 'Documento educativo externo.', accessed: '11 nov 2026', url: 'https://www.w3.org/WAI/tutorials/images/' }
-];
-
-function findDiscipline(id) {
-  return DISCIPLINES.find((item) => item.id === id) || DISCIPLINES.at(-1);
-}
-
-function findPurpose(id) {
-  return PURPOSES.find((item) => item.id === id) || PURPOSES.at(-1);
-}
-
-function findTemplate(id) {
-  return TEMPLATES.find((item) => item.id === id) || TEMPLATES[0];
-}
-
-function getRecommendation(disciplineId, purposeId, customDiscipline = '') {
-  const discipline = findDiscipline(disciplineId);
-  const purpose = findPurpose(purposeId);
-  const name = customDiscipline.trim() || discipline.label;
-  return `Para ${name} con destino a ${purpose.label.toLowerCase()}: ${purpose.guidance}`;
-}
-
-
-const SCHEMA_VERSION = 2;
-
-function uid(prefix = 'item') {
-  const value = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  return `${prefix}-${value}`;
-}
-
-function text(value, max = 5000) {
-  return String(value ?? '').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '').slice(0, max);
-}
-
-function safeImage(value) {
-  const candidate = String(value ?? '');
-  return /^data:image\/(?:png|jpeg|webp);base64,[a-z0-9+/=\s]+$/i.test(candidate) ? candidate : '';
-}
-
-function createEmptyProject() {
-  return {
-    id: 'current',
-    version: SCHEMA_VERSION,
-    updatedAt: '',
-    discipline: 'painting',
-    customDiscipline: '',
-    purpose: 'general',
-    template: 'museo',
-    profile: {
-      artistName: '', professionalTitle: '', dossierTitle: '', city: '',
-      statement: '', bio: '', coverImage: '', portraitImage: ''
-    },
-    works: [],
-    cv: { education: [], solo: [], group: [], awards: [], collections: [], press: [] },
-    contact: { email: '', phone: '', website: '', instagram: '', gallery: '', studio: '' }
-  };
-}
-
-function normalizeEntries(entries) {
-  if (!Array.isArray(entries)) return [];
-  return entries.slice(0, 100).map((item) => ({ id: text(item?.id || uid('cv'), 120), year: text(item?.year, 20), description: text(item?.description, 600) }));
-}
-
-function normalizeWorks(works) {
-  if (!Array.isArray(works)) return [];
-  return works.slice(0, 50).map((work) => ({
-    id: text(work?.id || uid('work'), 120),
-    title: text(work?.title, 200),
-    year: text(work?.year, 20),
-    medium: text(work?.medium, 300),
-    dimensions: text(work?.dimensions ?? work?.dims, 120),
-    edition: text(work?.edition, 100),
-    description: text(work?.description ?? work?.desc, 1500),
-    image: safeImage(work?.image ?? work?.img)
-  }));
-}
-
-function normalizeProject(input) {
-  const base = createEmptyProject();
-  const source = input && typeof input === 'object' ? input : {};
-  const profile = source.profile && typeof source.profile === 'object' ? source.profile : source;
-  const contact = source.contact && typeof source.contact === 'object' ? source.contact : source;
-  const cv = source.cv && typeof source.cv === 'object' ? source.cv : {};
-
-  return {
-    ...base,
-    id: 'current',
-    version: SCHEMA_VERSION,
-    updatedAt: text(source.updatedAt, 40),
-    discipline: text(source.discipline ?? source.tipo, 80) || base.discipline,
-    customDiscipline: text(source.customDiscipline ?? source.tipoCustom, 100),
-    purpose: text(source.purpose, 80) || base.purpose,
-    template: text(source.template, 80) || base.template,
-    profile: {
-      artistName: text(profile.artistName ?? profile.nombre, 100),
-      professionalTitle: text(profile.professionalTitle ?? profile.tituloProfesional, 100),
-      dossierTitle: text(profile.dossierTitle ?? profile.subtitulo, 120),
-      city: text(profile.city ?? profile.ciudad, 100),
-      statement: text(profile.statement, 5000),
-      bio: text(profile.bio, 4000),
-      coverImage: safeImage(profile.coverImage ?? source.coverImg),
-      portraitImage: safeImage(profile.portraitImage ?? source.photoImg)
-    },
-    works: normalizeWorks(source.works ?? source.obras),
-    cv: {
-      education: normalizeEntries(cv.education ?? cv.educacion),
-      solo: normalizeEntries(cv.solo),
-      group: normalizeEntries(cv.group ?? cv.grupo),
-      awards: normalizeEntries(cv.awards ?? cv.premios),
-      collections: normalizeEntries(cv.collections ?? cv.colecciones),
-      press: normalizeEntries(cv.press ?? cv.prensa)
-    },
-    contact: {
-      email: text(contact.email, 200), phone: text(contact.phone ?? contact.telefono, 50),
-      website: text(contact.website ?? contact.web, 300), instagram: text(contact.instagram, 100),
-      gallery: text(contact.gallery ?? contact.galeria, 150), studio: text(contact.studio ?? contact.estudio, 150)
-    }
-  };
-}
-
-function wordCount(value) {
-  const normalized = text(value).trim();
-  return normalized ? normalized.split(/\s+/u).length : 0;
-}
-
-function fileStem(value) {
-  const cleaned = text(value, 100).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-  return cleaned || 'artdossier';
-}
-
-function exportPayload(project) {
-  const normalized = normalizeProject(project);
-  normalized.updatedAt = new Date().toISOString();
-  return JSON.stringify(normalized, null, 2);
-}
-
-function validImageFile(file) {
-  const allowed = ['image/jpeg', 'image/png', 'image/webp'];
-  if (!file || !allowed.includes(file.type)) return { ok: false, message: 'Usa una imagen JPG, PNG o WEBP.' };
-  if (file.size > 20 * 1024 * 1024) return { ok: false, message: 'La imagen supera el límite de 20 MB.' };
-  return { ok: true, message: '' };
-}
-
-
-
-
-const DB_NAME = 'artdossier-studio';
-const DB_VERSION = 1;
-const STORE_NAME = 'projects';
-const year = new Date().getFullYear();
-let state = createEmptyProject();
-let saveTimer = 0;
-let toastTimer = 0;
-let lastFocus = null;
-
-const $ = (selector, root = document) => root.querySelector(selector);
-const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-
-function make(tag, className = '', content = '') {
-  const element = document.createElement(tag);
-  if (className) element.className = className;
-  if (content !== '') element.textContent = content;
-  return element;
-}
-
-function setText(selector, value) {
-  const element = typeof selector === 'string' ? $(selector) : selector;
-  if (element) element.textContent = value;
-}
-
-function showToast(message) {
-  const toast = $('#toast');
-  toast.textContent = message;
-  toast.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = window.setTimeout(() => toast.classList.remove('show'), 2800);
-}
-
-function openDatabase() {
-  return new Promise((resolve, reject) => {
-    if (!('indexedDB' in window)) return reject(new Error('IndexedDB no está disponible'));
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
-    request.onupgradeneeded = () => {
+function readProject() {
+  return new Promise((resolve) => {
+    let fallback = null;
+    try { fallback = JSON.parse(localStorage.getItem('artdossier-project') || 'null'); } catch { /* sin acceso */ }
+    if (!('indexedDB' in window)) return resolve(fallback);
+    const request = indexedDB.open('artdossier-studio', 1);
+    request.onupgradeneeded = () => { if (!request.result.objectStoreNames.contains('projects')) request.result.createObjectStore('projects', { keyPath: 'id' }); };
+    request.onerror = () => resolve(fallback);
+    request.onsuccess = () => {
       const db = request.result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+      try {
+        const get = db.transaction('projects', 'readonly').objectStore('projects').get('current');
+        get.onsuccess = () => { db.close(); resolve(get.result || fallback); };
+        get.onerror = () => { db.close(); resolve(fallback); };
+      } catch { db.close(); resolve(fallback); }
     };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
   });
 }
 
-async function readStoredProject() {
-  try {
-    const db = await openDatabase();
-    const result = await new Promise((resolve, reject) => {
-      const request = db.transaction(STORE_NAME, 'readonly').objectStore(STORE_NAME).get('current');
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-    db.close();
-    if (result) return normalizeProject(result);
-  } catch { /* se intenta el respaldo compatible */ }
-  // También si IndexedDB funciona pero está vacío: un guardado anterior pudo quedar en modo compatible.
-  try {
-    const fallback = localStorage.getItem('artdossier-project');
-    if (fallback) return normalizeProject(JSON.parse(fallback));
-  } catch { /* empezar limpio */ }
-  return createEmptyProject();
+function relativeDate(iso) {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return '';
+  const minutes = Math.round((Date.now() - date.getTime()) / 60000);
+  if (minutes < 1) return 'hace un momento';
+  if (minutes < 60) return `hace ${minutes} min`;
+  if (minutes < 60 * 24) return `hace ${Math.round(minutes / 60)} h`;
+  return date.toLocaleDateString('es', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
-function hasContent(project) {
-  const p = project.profile;
-  return Boolean(p.artistName || p.dossierTitle || p.statement || p.bio || p.coverImage || project.works.length
-    || Object.values(project.cv).some((list) => list.length) || Object.values(project.contact).some(Boolean));
+function render(project) {
+  const profile = project?.profile || {};
+  const works = Array.isArray(project?.works) ? project.works.filter((work) => work && (work.title || work.image || work.medium)) : [];
+  const cvCount = Object.values(project?.cv || {}).reduce((sum, list) => sum + (Array.isArray(list) ? list.filter((entry) => entry?.year || entry?.description).length : 0), 0);
+  const contact = Object.values(project?.contact || {}).some(Boolean);
+  const started = Boolean(profile.artistName || profile.dossierTitle || profile.statement || profile.bio || works.length || cvCount || contact);
+  if (!started) { $('.current').classList.add('is-empty'); return; }
+
+  if (profile.artistName) setText('#greeting', `Hola, ${profile.artistName}.`);
+  $('#projectEmpty').hidden = true;
+  $('#projectInfo').hidden = false;
+  $('#previewDossier').hidden = false;
+  setText('#openDossier', 'Continuar mi dossier');
+  const discipline = project.customDiscipline || DISCIPLINE_LABELS[project.discipline] || 'Dossier artístico';
+  setText('#projectDiscipline', discipline.toLocaleUpperCase('es'));
+  setText('#projectTitle', profile.dossierTitle || 'Dossier sin título');
+  const saved = project.updatedAt ? relativeDate(project.updatedAt) : '';
+  setText('#projectSaved', [profile.artistName, saved && `guardado ${saved}`].filter(Boolean).join(' · '));
+  setText('#statWorks', String(works.length));
+  setText('#statImages', String(works.filter((work) => isImage(work.image)).length));
+  setText('#statCv', String(cvCount));
+  setText('#coverMeta', `ARTDOSSIER · ${new Date().getFullYear()}`);
+  setText('#coverTitle', profile.dossierTitle || 'Obras seleccionadas');
+  if (isImage(profile.coverImage)) { const image = document.createElement('img'); image.src = profile.coverImage; image.alt = ''; $('#coverArt').replaceChildren(image); }
+
+  // Mismos criterios esenciales que la revisión de ArtDossier.
+  const checks = [
+    ['Nombre o firma artística', Boolean(profile.artistName)],
+    ['Título del dossier', Boolean(profile.dossierTitle)],
+    ['Statement', Boolean(profile.statement)],
+    ['Al menos una obra', works.length > 0],
+    ['Todas las obras con imagen', works.length > 0 && works.every((work) => isImage(work.image))],
+    ['Fichas técnicas completas', works.length > 0 && works.every((work) => work.title && work.year && work.medium && work.dimensions)],
+    ['Datos de contacto', contact]
+  ];
+  const done = checks.filter(([, ok]) => ok).length;
+  const percent = Math.round((done / checks.length) * 100);
+  setText('#progressText', `${done} de ${checks.length}`);
+  $('#progressFill').style.width = `${percent}%`;
+  $('#progressBar').setAttribute('aria-valuenow', String(percent));
+  const pending = checks.filter(([, ok]) => !ok).map(([label]) => label);
+  const list = $('#todoList');
+  list.replaceChildren(...pending.slice(0, 4).map((label) => { const item = document.createElement('li'); item.textContent = `Pendiente: ${label.toLocaleLowerCase('es')}`; return item; }));
+  if (!pending.length) { const item = document.createElement('li'); item.textContent = 'Todo lo esencial está completo. Revisa la vista previa y exporta tu PDF.'; list.append(item); }
 }
 
-function flushSave() {
-  if (!saveTimer) return;
-  clearTimeout(saveTimer);
-  saveTimer = 0;
-  saveProject();
-}
-
-async function saveProject({ announce = false } = {}) {
-  state.updatedAt = new Date().toISOString();
-  setText('#saveStatus', 'Guardando…');
-  try {
-    const db = await openDatabase();
-    await new Promise((resolve, reject) => {
-      const request = db.transaction(STORE_NAME, 'readwrite').objectStore(STORE_NAME).put(state);
-      request.onsuccess = () => resolve();
-      request.onerror = () => reject(request.error);
-    });
-    db.close();
-    setText('#saveStatus', 'Guardado en este dispositivo');
-    if (announce) showToast('Proyecto guardado en este dispositivo.');
-  } catch {
-    try {
-      localStorage.setItem('artdossier-project', JSON.stringify(state));
-      setText('#saveStatus', 'Guardado local (modo compatible)');
-      if (announce) showToast('Proyecto guardado localmente.');
-    } catch {
-      setText('#saveStatus', 'No se pudo guardar');
-      showToast('No hay espacio suficiente. Exporta un respaldo JSON.');
-    }
-  }
-}
-
-function scheduleSave() {
-  setText('#saveStatus', 'Cambios pendientes…');
-  clearTimeout(saveTimer);
-  saveTimer = window.setTimeout(() => { saveTimer = 0; saveProject(); }, 600);
-}
-
-function switchTab(name) {
-  $$('.panel').forEach((panel) => {
-    const active = panel.id === `tab-${name}`;
-    panel.classList.toggle('active', active);
-    panel.hidden = !active;
-  });
-  $$('.nav-button').forEach((button) => button.classList.toggle('active', button.dataset.tab === name));
-  $('#sidebar').classList.remove('open');
-  $('#menuButton').setAttribute('aria-expanded', 'false');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function renderDisciplineGrid(query = '') {
-  const grid = $('#disciplineGrid');
-  grid.replaceChildren();
-  const normalizedQuery = query.trim().toLocaleLowerCase('es');
-  DISCIPLINES.filter((item) => `${item.label} ${item.short}`.toLocaleLowerCase('es').includes(normalizedQuery)).forEach((item) => {
-    const button = make('button', `choice-card${state.discipline === item.id && !state.customDiscipline ? ' selected' : ''}`);
-    button.type = 'button';
-    button.setAttribute('aria-pressed', String(state.discipline === item.id && !state.customDiscipline));
-    button.append(make('span', 'choice-icon', item.icon), make('strong', '', item.label), make('small', '', item.short));
-    button.addEventListener('click', () => {
-      state.discipline = item.id;
-      state.customDiscipline = '';
-      $('#customDiscipline').value = '';
-      renderConfiguration();
-      scheduleSave();
-    });
-    grid.append(button);
-  });
-}
-
-function renderPurposeGrid() {
-  const grid = $('#purposeGrid');
-  grid.replaceChildren();
-  PURPOSES.forEach((item) => {
-    const button = make('button', `choice-card${state.purpose === item.id ? ' selected' : ''}`);
-    button.type = 'button';
-    button.setAttribute('aria-pressed', String(state.purpose === item.id));
-    button.append(make('span', 'choice-icon', item.icon), make('strong', '', item.label), make('small', '', item.short));
-    button.addEventListener('click', () => { state.purpose = item.id; renderConfiguration(); scheduleSave(); });
-    grid.append(button);
-  });
-}
-
-function renderTemplateGrid() {
-  const grid = $('#templateGrid');
-  grid.replaceChildren();
-  TEMPLATES.forEach((item) => {
-    const button = make('button', `template-card${state.template === item.id ? ' selected' : ''}`);
-    button.type = 'button';
-    button.setAttribute('aria-pressed', String(state.template === item.id));
-    button.append(make('div', `template-swatch ${item.swatch}`), make('strong', '', item.label), make('small', '', item.short));
-    button.addEventListener('click', () => { state.template = item.id; renderConfiguration(); updateMiniPreview(); scheduleSave(); });
-    grid.append(button);
-  });
-}
-
-function renderGuide() {
-  const discipline = findDiscipline(state.discipline);
-  const purpose = findPurpose(state.purpose);
-  const disciplineName = state.customDiscipline || discipline.label;
-  setText('#guideIntro', `Guía inicial para ${disciplineName} orientada a ${purpose.label.toLowerCase()}. Adáptala a los requisitos reales de cada destinatario.`);
-  const focus = $('#guideFocus');
-  const checklist = $('#guideChecklist');
-  focus.replaceChildren(...discipline.focus.map((item) => make('li', '', item)), make('li', '', purpose.guidance));
-  checklist.replaceChildren(...discipline.checklist.map((item) => make('li', '', item)));
-  const example = $('#guideExample');
-  example.replaceChildren(make('strong', '', 'EJEMPLO FICTICIO · NO SE COPIA AL DOSSIER'), make('p', '', discipline.example.title), make('p', '', discipline.example.body));
-}
-
-function renderConfiguration() {
-  renderDisciplineGrid($('#disciplineSearch')?.value || '');
-  renderPurposeGrid();
-  renderTemplateGrid();
-  setText('#recommendation', getRecommendation(state.discipline, state.purpose, state.customDiscipline));
-  renderGuide();
-}
-
-function updateMiniPreview() {
-  const discipline = state.customDiscipline || findDiscipline(state.discipline).label;
-  const purpose = findPurpose(state.purpose).label;
-  const template = findTemplate(state.template).id;
-  setText('#miniYear', String(year));
-  setText('#miniDiscipline', discipline.toLocaleUpperCase('es'));
-  setText('#miniPurpose', purpose.toLocaleUpperCase('es'));
-  setText('#miniTitle', state.profile.dossierTitle || 'Obras seleccionadas');
-  setText('#miniArtist', state.profile.artistName || 'TU NOMBRE');
-  setText('#miniCity', state.profile.city ? `${state.profile.city} · ${year}` : `DOSSIER ARTÍSTICO · ${year}`);
-  const documentElement = $('#miniDocument');
-  documentElement.className = `mini-document template-${template}`;
-  const art = $('#miniArt');
-  art.replaceChildren();
-  if (state.profile.coverImage) {
-    const image = make('img');
-    image.src = state.profile.coverImage;
-    image.alt = '';
-    art.append(image);
-  } else {
-    art.append(make('span', '', 'AD'));
-  }
-}
-
-function bindProfileFields() {
-  const profileMap = {
-    artistName: 'artistName', professionalTitle: 'professionalTitle', dossierTitle: 'dossierTitle', city: 'city', statement: 'statement', bio: 'bio'
-  };
-  Object.entries(profileMap).forEach(([id, key]) => {
-    const element = $(`#${id}`);
-    element.value = state.profile[key];
-    element.addEventListener('input', () => {
-      state.profile[key] = text(element.value, Number(element.maxLength) > 0 ? Number(element.maxLength) : 5000);
-      if (id === 'statement') setText('#statementCount', `${wordCount(element.value)} palabras`);
-      if (id === 'bio') setText('#bioCount', `${wordCount(element.value)} palabras`);
-      updateMiniPreview();
-      scheduleSave();
-    });
-  });
-  setText('#statementCount', `${wordCount(state.profile.statement)} palabras`);
-  setText('#bioCount', `${wordCount(state.profile.bio)} palabras`);
-
-  const contactMap = { email: 'email', phone: 'phone', website: 'website', instagram: 'instagram', gallery: 'gallery', studio: 'studio' };
-  Object.entries(contactMap).forEach(([id, key]) => {
-    const element = $(`#${id}`);
-    element.value = state.contact[key];
-    element.addEventListener('input', () => { state.contact[key] = text(element.value, Number(element.maxLength) || 300); scheduleSave(); });
-  });
-}
-
-function readImage(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result));
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(file);
-  });
-}
-
-// Reduce las imágenes a un tamaño apto para impresión A4 (~300 ppp) para que el guardado,
-// los respaldos JSON y el PDF no pesen decenas de MB. Si la imagen ya es liviana, se conserva.
-const IMAGE_MAX_SIDE = 2400;
-const IMAGE_KEEP_BYTES = 900 * 1024;
-
-async function compressImage(dataUrl) {
-  const image = new Image();
-  image.src = dataUrl;
-  await image.decode();
-  const scale = Math.min(1, IMAGE_MAX_SIDE / Math.max(image.naturalWidth, image.naturalHeight));
-  if (scale === 1 && dataUrl.length * 0.75 <= IMAGE_KEEP_BYTES) return dataUrl;
-  const canvas = document.createElement('canvas');
-  canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
-  canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
-  const context = canvas.getContext('2d');
-  context.fillStyle = '#ffffff';
-  context.fillRect(0, 0, canvas.width, canvas.height);
-  context.drawImage(image, 0, 0, canvas.width, canvas.height);
-  const result = canvas.toDataURL('image/jpeg', 0.86);
-  return result.length < dataUrl.length ? result : dataUrl;
-}
-
-async function compressProjectImages(project) {
-  const shrink = async (value) => (value ? safeImage(await compressImage(value).catch(() => value)) : value);
-  project.profile.coverImage = await shrink(project.profile.coverImage);
-  project.profile.portraitImage = await shrink(project.profile.portraitImage);
-  for (const work of project.works) work.image = await shrink(work.image);
-  return project;
-}
-
-async function acceptImage(file, apply) {
-  const validation = validImageFile(file);
-  if (!validation.ok) return showToast(validation.message);
-  try {
-    const original = await readImage(file);
-    const optimized = safeImage(await compressImage(original).catch(() => original));
-    if (!optimized) return showToast('No se pudo leer la imagen.');
-    apply(optimized);
-    updateMiniPreview();
-    scheduleSave();
-  } catch {
-    showToast('No se pudo leer la imagen.');
-  }
-}
-
-function bindImageInput({ input, drop, preview, remove, getValue, setValue }) {
-  const refresh = () => {
-    const value = getValue();
-    preview.hidden = !value;
-    remove.hidden = !value;
-    if (value) preview.src = value;
-    else preview.removeAttribute('src');
-  };
-  refresh();
-  input.addEventListener('change', () => {
-    const [file] = input.files;
-    if (file) acceptImage(file, (value) => { setValue(value); refresh(); });
-    input.value = '';
-  });
-  ['dragenter', 'dragover'].forEach((name) => drop.addEventListener(name, (event) => { event.preventDefault(); drop.classList.add('dragging'); }));
-  ['dragleave', 'drop'].forEach((name) => drop.addEventListener(name, (event) => { event.preventDefault(); drop.classList.remove('dragging'); }));
-  drop.addEventListener('drop', (event) => {
-    const [file] = event.dataTransfer.files;
-    if (file) acceptImage(file, (value) => { setValue(value); refresh(); });
-  });
-  remove.addEventListener('click', () => { setValue(''); refresh(); updateMiniPreview(); scheduleSave(); });
-}
-
-function createInputField(labelText, value, options = {}) {
-  const label = make('label', `field${options.wide ? ' wide' : ''}`);
-  label.append(make('span', '', labelText));
-  const control = options.textarea ? make('textarea') : make('input');
-  if (options.textarea) control.rows = options.rows || 3;
-  else control.type = options.type || 'text';
-  control.value = value || '';
-  control.placeholder = options.placeholder || '';
-  control.maxLength = options.maxLength || 500;
-  control.addEventListener('input', () => options.onInput(text(control.value, control.maxLength)));
-  label.append(control);
-  return { label, control };
-}
-
-function addWork() {
-  state.works.push({ id: uid('work'), title: '', year: '', medium: '', dimensions: '', edition: '', description: '', image: '' });
-  renderWorks();
-  scheduleSave();
-}
-
-function moveWork(index, offset) {
-  const target = index + offset;
-  if (target < 0 || target >= state.works.length) return;
-  [state.works[index], state.works[target]] = [state.works[target], state.works[index]];
-  renderWorks();
-  scheduleSave();
-}
-
-function renderWorks() {
-  const list = $('#worksList');
-  list.replaceChildren();
-  $('#worksEmpty').hidden = state.works.length > 0;
-  state.works.forEach((work, index) => {
-    const card = make('article', 'work-editor');
-    const header = make('header', 'work-editor-header');
-    header.append(make('strong', '', `Obra ${String(index + 1).padStart(2, '0')}`));
-    const actions = make('div', 'work-actions');
-    const up = make('button', '', '↑'); up.type = 'button'; up.title = 'Mover arriba'; up.disabled = index === 0; up.addEventListener('click', () => moveWork(index, -1));
-    const down = make('button', '', '↓'); down.type = 'button'; down.title = 'Mover abajo'; down.disabled = index === state.works.length - 1; down.addEventListener('click', () => moveWork(index, 1));
-    const remove = make('button', 'danger', 'Eliminar'); remove.type = 'button'; remove.addEventListener('click', () => {
-      const name = work.title ? `«${work.title}»` : `la obra ${index + 1}`;
-      if (!window.confirm(`¿Eliminar ${name}? Esta acción no se puede deshacer.`)) return;
-      state.works.splice(index, 1); renderWorks(); scheduleSave();
-    });
-    actions.append(up, down, remove); header.append(actions); card.append(header);
-    const grid = make('div', 'work-editor-grid');
-    const fields = make('div', 'work-fields');
-    const definitions = [
-      ['Título *', 'title', { wide: true, maxLength: 200, placeholder: 'Sin título' }],
-      ['Año', 'year', { maxLength: 20, placeholder: String(year) }],
-      ['Edición', 'edition', { maxLength: 100, placeholder: 'Ej. 1/5 + 2 P.A.' }],
-      ['Técnica / materiales', 'medium', { wide: true, maxLength: 300, placeholder: 'Óleo sobre lino' }],
-      ['Dimensiones', 'dimensions', { wide: true, maxLength: 120, placeholder: '120 × 90 cm' }],
-      ['Descripción o nota', 'description', { wide: true, textarea: true, rows: 3, maxLength: 1500, placeholder: 'Contexto breve y verificable' }]
-    ];
-    definitions.forEach(([label, key, options]) => {
-      const field = createInputField(label, work[key], { ...options, onInput: (value) => { work[key] = value; scheduleSave(); } });
-      fields.append(field.label);
-    });
-    const imageLabel = make('label', 'upload-field compact work-image');
-    const imageInput = make('input'); imageInput.type = 'file'; imageInput.accept = 'image/jpeg,image/png,image/webp'; imageInput.hidden = true;
-    imageLabel.append(imageInput, make('span', 'upload-icon', '＋'), make('strong', '', 'Imagen de la obra'), make('span', '', 'JPG, PNG o WEBP · máximo 20 MB'));
-    const preview = make('img'); preview.alt = `Vista previa de ${work.title || `obra ${index + 1}`}`; preview.hidden = !work.image; if (work.image) preview.src = work.image; imageLabel.append(preview);
-    imageInput.addEventListener('change', () => { const [file] = imageInput.files; if (file) acceptImage(file, (value) => { work.image = value; renderWorks(); }); imageInput.value = ''; });
-    imageLabel.addEventListener('dragover', (event) => { event.preventDefault(); imageLabel.classList.add('dragging'); });
-    imageLabel.addEventListener('dragleave', () => imageLabel.classList.remove('dragging'));
-    imageLabel.addEventListener('drop', (event) => { event.preventDefault(); imageLabel.classList.remove('dragging'); const [file] = event.dataTransfer.files; if (file) acceptImage(file, (value) => { work.image = value; renderWorks(); }); });
-    const imageArea = make('div'); imageArea.append(imageLabel);
-    if (work.image) { const clear = make('button', 'text-button', 'Quitar imagen'); clear.type = 'button'; clear.addEventListener('click', () => { work.image = ''; renderWorks(); scheduleSave(); }); imageArea.append(clear); }
-    grid.append(fields, imageArea); card.append(grid); list.append(card);
-  });
-}
-
-function renderCV() {
-  const root = $('#cvSections');
-  root.replaceChildren();
-  CV_SECTIONS.forEach((section) => {
-    const wrapper = make('section', 'cv-section');
-    const header = make('header', 'cv-section-header');
-    header.append(make('h3', '', section.label));
-    const add = make('button', 'button ghost', '＋ Añadir'); add.type = 'button';
-    add.addEventListener('click', () => { state.cv[section.id].push({ id: uid('cv'), year: '', description: '' }); renderCV(); scheduleSave(); });
-    header.append(add); wrapper.append(header);
-    if (!state.cv[section.id].length) wrapper.append(make('p', 'cv-empty', 'Sin entradas. Esta sección no aparecerá en el dossier.'));
-    state.cv[section.id].forEach((entry, index) => {
-      const row = make('div', 'cv-row');
-      const yearInput = make('input'); yearInput.type = 'text'; yearInput.maxLength = 20; yearInput.placeholder = 'Año'; yearInput.value = entry.year;
-      const description = make('input'); description.type = 'text'; description.maxLength = 600; description.placeholder = 'Dato real y verificable'; description.value = entry.description;
-      const remove = make('button', '', '×'); remove.type = 'button'; remove.setAttribute('aria-label', `Eliminar entrada de ${section.label}`);
-      yearInput.addEventListener('input', () => { entry.year = text(yearInput.value, 20); scheduleSave(); });
-      description.addEventListener('input', () => { entry.description = text(description.value, 600); scheduleSave(); });
-      remove.addEventListener('click', () => { state.cv[section.id].splice(index, 1); renderCV(); scheduleSave(); });
-      row.append(yearInput, description, remove); wrapper.append(row);
-    });
-    root.append(wrapper);
-  });
-}
-
-function renderReferences() {
-  const grid = $('#referenceGrid');
-  grid.replaceChildren();
-  REFERENCES.forEach((reference) => {
-    const card = make('article', 'reference-card');
-    card.append(make('span', 'reference-type', reference.type), make('h3', '', reference.title), make('p', 'reference-source', `${reference.author} · ${reference.source}`));
-    const details = make('dl');
-    [['Disciplina', reference.discipline], ['Qué observar', reference.observe], ['Derechos', reference.license], ['Consulta', reference.accessed]].forEach(([term, definition]) => details.append(make('dt', '', term), make('dd', '', definition)));
-    const link = make('a', '', 'Abrir fuente externa ↗'); link.href = reference.url; link.target = '_blank'; link.rel = 'noopener noreferrer';
-    card.append(details, link); grid.append(card);
-  });
-}
-
-function appendTextBlock(parent, heading, body) {
-  if (!body) return;
-  parent.append(make('h2', '', heading), make('p', '', body));
-}
-
-function renderDocumentPages(container) {
-  container.replaceChildren();
-  const templateClass = `template-${findTemplate(state.template).id}`;
-  const discipline = state.customDiscipline || findDiscipline(state.discipline).label;
-  const purpose = findPurpose(state.purpose).label;
-  const newPage = (label) => { const page = make('section', `doc-page ${templateClass}`); page.append(make('p', 'page-label', label)); container.append(page); return page; };
-
-  const cover = newPage(`${discipline} · ${year}`);
-  cover.append(make('h1', '', state.profile.dossierTitle || 'Dossier artístico'));
-  const coverByline = state.profile.artistName ? make('p', '', state.profile.artistName) : make('p', 'missing', 'Falta tu nombre (no se imprimirá este aviso)');
-  if (state.profile.professionalTitle) coverByline.append(document.createTextNode(` · ${state.profile.professionalTitle}`));
-  cover.append(coverByline);
-  if (state.profile.coverImage) { const image = make('img', 'cover-image'); image.src = state.profile.coverImage; image.alt = ''; cover.append(image); }
-  const bottom = make('div', 'cover-bottom'); bottom.append(make('span', '', state.profile.city), make('span', '', purpose)); cover.append(bottom);
-
-  if (state.profile.statement) appendTextBlock(newPage('Statement'), 'Statement', state.profile.statement);
-  if (state.profile.bio || state.profile.portraitImage) {
-    const bioPage = newPage('Biografía');
-    appendTextBlock(bioPage, 'Biografía', state.profile.bio);
-    if (state.profile.portraitImage) { const portrait = make('img', 'portrait-image'); portrait.src = state.profile.portraitImage; portrait.alt = `Retrato de ${state.profile.artistName || 'la persona artista'}`; bioPage.append(portrait); }
-  }
-
-  state.works.filter((work) => work.title || work.image || work.medium).forEach((work, index) => {
-    const page = newPage(`Obra ${String(index + 1).padStart(2, '0')}`);
-    if (work.image) { const image = make('img', 'work-page-image'); image.src = work.image; image.alt = work.title || `Obra ${index + 1}`; page.append(image); }
-    const meta = make('div', 'work-meta');
-    const main = make('div'); main.append(make('h2', '', work.title || 'Sin título'));
-    if (work.medium) main.append(make('p', '', work.medium));
-    if (work.dimensions) main.append(make('p', '', work.dimensions));
-    const side = make('div');
-    if (work.year) side.append(make('p', '', work.year));
-    if (work.edition) side.append(make('p', '', `Edición: ${work.edition}`));
-    meta.append(main, side);
-    if (work.description) meta.append(make('p', 'work-description', work.description));
-    page.append(meta);
-  });
-
-  const cvGroups = CV_SECTIONS.map((section) => ({ ...section, entries: state.cv[section.id].filter((entry) => entry.year || entry.description) })).filter((section) => section.entries.length);
-  if (cvGroups.length) {
-    const page = newPage('Currículum seleccionado');
-    page.append(make('h2', '', 'Trayectoria'));
-    cvGroups.forEach((section) => {
-      const block = make('div', 'cv-block'); block.append(make('h3', '', section.label));
-      section.entries.forEach((entry) => { const row = make('div', 'cv-entry'); row.append(make('span', '', entry.year), make('span', '', entry.description)); block.append(row); });
-      page.append(block);
-    });
-  }
-
-  const contacts = [['Email', state.contact.email], ['Teléfono', state.contact.phone], ['Web', state.contact.website], ['Instagram', state.contact.instagram], ['Galería', state.contact.gallery], ['Estudio', state.contact.studio]].filter(([, value]) => value);
-  if (contacts.length) {
-    const page = newPage('Contacto'); page.append(make('h2', '', state.profile.artistName || 'Contacto'));
-    const list = make('div', 'contact-list'); contacts.forEach(([label, value]) => list.append(make('div', '', `${label}: ${value}`))); page.append(list);
-  }
-}
-
-function reviewProject() {
-  const issues = [];
-  const works = state.works.filter((work) => work.title || work.image || work.medium);
-  if (!state.profile.artistName) issues.push('Falta tu nombre o firma artística (Portada).');
-  if (!state.profile.dossierTitle) issues.push('Sin título del dossier: se usará «Dossier artístico».');
-  if (!state.profile.statement) issues.push('Aún no hay statement.');
-  if (!works.length) issues.push('Aún no hay obras con contenido.');
-  const noImage = works.filter((work) => !work.image).length;
-  if (noImage) issues.push(`${noImage} obra(s) sin imagen.`);
-  const incomplete = works.filter((work) => !work.title || !work.year || !work.medium || !work.dimensions).length;
-  if (incomplete) issues.push(`${incomplete} obra(s) con la ficha técnica incompleta (título, año, técnica o dimensiones).`);
-  if (!Object.values(state.contact).some(Boolean)) issues.push('Sin datos de contacto.');
-  return issues;
-}
-
-function renderReview() {
-  const box = $('#reviewBox');
-  const issues = reviewProject();
-  box.classList.toggle('ok', !issues.length);
-  box.replaceChildren();
-  if (!issues.length) { box.append(make('strong', '', 'Revisión: todo lo esencial está completo.')); return; }
-  const list = make('ul');
-  issues.forEach((issue) => list.append(make('li', '', issue)));
-  box.append(make('strong', '', 'Revisión antes de exportar'), list);
-}
-
-function openPreview() {
-  flushSave();
-  lastFocus = document.activeElement;
-  renderReview();
-  renderDocumentPages($('#previewPages'));
-  const modal = $('#previewModal'); modal.hidden = false; document.body.style.overflow = 'hidden'; $('#closePreviewButton').focus();
-}
-
-function closePreview() {
-  $('#previewModal').hidden = true; document.body.style.overflow = ''; lastFocus?.focus?.();
-}
-
-function trapFocus(event) {
-  const modal = $('#previewModal');
-  if (event.key !== 'Tab' || modal.hidden) return;
-  const focusable = $$('button, a[href], input, [tabindex]:not([tabindex="-1"])', modal).filter((el) => !el.disabled && el.offsetParent !== null);
-  if (!focusable.length) return;
-  const first = focusable[0];
-  const last = focusable.at(-1);
-  if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-  else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
-}
-
-async function printDossier() {
-  if (!state.profile.artistName && !window.confirm('Tu dossier aún no tiene nombre de artista. ¿Quieres exportarlo de todas formas?')) return;
-  flushSave();
-  const area = $('#printArea');
-  renderDocumentPages(area);
-  // El fondo de la hoja continúa el color de la plantilla cuando un texto ocupa más de una hoja.
-  document.documentElement.style.setProperty('--print-bg', getComputedStyle(area.firstElementChild).backgroundColor);
-  // Esperar a que todas las imágenes estén decodificadas para que no salgan en blanco en el PDF.
-  await Promise.all($$('img', area).map((image) => image.decode().catch(() => {})));
-  window.requestAnimationFrame(() => window.print());
-}
-
-async function resetProject() {
-  if (hasContent(state) && !window.confirm('Se borrará el proyecto guardado en este navegador. Te recomendamos descargar antes un respaldo JSON. ¿Empezar un proyecto nuevo?')) return;
-  clearTimeout(saveTimer); saveTimer = 0;
-  state = createEmptyProject();
-  try { localStorage.removeItem('artdossier-project'); } catch { /* sin acceso */ }
-  hydrateUI();
-  switchTab('configurar');
-  await saveProject();
-  setText('#saveStatus', 'Proyecto nuevo');
-  showToast('Proyecto nuevo creado.');
-}
-
-function exportProject() {
-  const payload = exportPayload(state);
-  const blob = new Blob([payload], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const link = make('a'); link.href = url; link.download = `${fileStem(state.profile.artistName || 'artdossier')}-respaldo.json`; link.click();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-  showToast('Respaldo JSON exportado.');
-}
-
-async function importProject(file) {
-  // Límite amplio: los respaldos antiguos guardaban las imágenes sin optimizar.
-  if (!file || file.size > 200 * 1024 * 1024) return showToast('El respaldo debe pesar menos de 200 MB.');
-  if (hasContent(state) && !window.confirm('Importar reemplazará el proyecto actual de este navegador. ¿Continuar?')) return;
-  try {
-    setText('#saveStatus', 'Importando…');
-    const parsed = JSON.parse(await file.text());
-    const imported = await compressProjectImages(normalizeProject(parsed));
-    clearTimeout(saveTimer); saveTimer = 0;
-    state = imported;
-    hydrateUI();
-    await saveProject();
-    showToast('Respaldo importado correctamente.');
-  } catch {
-    setText('#saveStatus', 'Importación cancelada');
-    showToast('El archivo no contiene un respaldo JSON válido.');
-  }
-}
-
-function hydrateUI() {
-  $('#disciplineSearch').value = '';
-  $('#customDiscipline').value = state.customDiscipline;
-  const profileMap = ['artistName', 'professionalTitle', 'dossierTitle', 'city', 'statement', 'bio'];
-  profileMap.forEach((id) => { $(`#${id}`).value = state.profile[id]; });
-  const contactMap = ['email', 'phone', 'website', 'instagram', 'gallery', 'studio'];
-  contactMap.forEach((id) => { $(`#${id}`).value = state.contact[id]; });
-  $('#coverPreview').hidden = !state.profile.coverImage; $('#removeCover').hidden = !state.profile.coverImage; if (state.profile.coverImage) $('#coverPreview').src = state.profile.coverImage;
-  $('#portraitPreview').hidden = !state.profile.portraitImage; $('#removePortrait').hidden = !state.profile.portraitImage; if (state.profile.portraitImage) $('#portraitPreview').src = state.profile.portraitImage;
-  setText('#statementCount', `${wordCount(state.profile.statement)} palabras`); setText('#bioCount', `${wordCount(state.profile.bio)} palabras`);
-  renderConfiguration(); renderWorks(); renderCV(); updateMiniPreview();
-}
-
-function bindEvents() {
-  $$('.nav-button').forEach((button) => button.addEventListener('click', () => switchTab(button.dataset.tab)));
-  $$('[data-go]').forEach((button) => button.addEventListener('click', () => switchTab(button.dataset.go)));
-  $('#continueButton').addEventListener('click', () => switchTab('aprender'));
-  $('#menuButton').addEventListener('click', () => { const open = $('#sidebar').classList.toggle('open'); $('#menuButton').setAttribute('aria-expanded', String(open)); });
-  $('#disciplineSearch').addEventListener('input', (event) => renderDisciplineGrid(event.target.value));
-  $('#customDiscipline').addEventListener('input', (event) => { state.customDiscipline = text(event.target.value, 100); if (state.customDiscipline) state.discipline = 'multidisciplinary'; renderDisciplineGrid($('#disciplineSearch').value); setText('#recommendation', getRecommendation(state.discipline, state.purpose, state.customDiscipline)); renderGuide(); updateMiniPreview(); scheduleSave(); });
-  $('#addWorkButton').addEventListener('click', addWork); $$('[data-add-work]').forEach((button) => button.addEventListener('click', addWork));
-  ['previewButton', 'openPreviewButton'].forEach((id) => $(`#${id}`).addEventListener('click', openPreview));
-  $('#closePreviewButton').addEventListener('click', closePreview);
-  $('#previewModal').addEventListener('click', (event) => { if (event.target === $('#previewModal')) closePreview(); });
-  document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !$('#previewModal').hidden) closePreview(); trapFocus(event); });
-  $('.brand').addEventListener('click', (event) => { event.preventDefault(); switchTab('configurar'); });
-  $('#resetButton').addEventListener('click', resetProject);
-  // No perder los últimos cambios si se cierra la pestaña o se cambia de app (móvil).
-  window.addEventListener('pagehide', flushSave);
-  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushSave(); });
-  ['printButton', 'modalPrintButton'].forEach((id) => $(`#${id}`).addEventListener('click', printDossier));
-  $('#exportButton').addEventListener('click', exportProject);
-  $('#importButton').addEventListener('click', () => $('#importInput').click());
-  $('#importInput').addEventListener('change', () => { const [file] = $('#importInput').files; if (file) importProject(file); $('#importInput').value = ''; });
-}
-
-async function init() {
-  state = await readStoredProject();
-  bindProfileFields();
-  bindImageInput({ input: $('#coverInput'), drop: $('#coverDrop'), preview: $('#coverPreview'), remove: $('#removeCover'), getValue: () => state.profile.coverImage, setValue: (value) => { state.profile.coverImage = value; } });
-  bindImageInput({ input: $('#portraitInput'), drop: $('#portraitDrop'), preview: $('#portraitPreview'), remove: $('#removePortrait'), getValue: () => state.profile.portraitImage, setValue: (value) => { state.profile.portraitImage = value; } });
-  bindEvents(); renderReferences(); hydrateUI();
-  setText('#saveStatus', state.updatedAt ? 'Proyecto recuperado' : 'Listo para crear');
-  // Proyectos guardados por versiones anteriores pueden tener imágenes sin optimizar.
-  const images = [state.profile.coverImage, state.profile.portraitImage, ...state.works.map((work) => work.image)];
-  if (images.some((value) => value && value.length * 0.75 > IMAGE_KEEP_BYTES * 2)) {
-    const current = state;
-    await compressProjectImages(current);
-    if (current === state) { hydrateUI(); await saveProject(); setText('#saveStatus', 'Proyecto recuperado y optimizado'); }
-  }
-}
-
-init();
-
+readProject().then(render).catch(() => {});
   </script>
 </body>
 </html>
-
