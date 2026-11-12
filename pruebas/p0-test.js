@@ -31,7 +31,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', (e) => errors.push(String(e)));
     page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
-    await page.goto(url);
+    await page.goto(url + '#configurar');
     await page.waitForTimeout(300);
 
     const cover = await makeImage(page, 2400, 1600, 10);
@@ -59,7 +59,7 @@ async function run() {
     // Importar como lo haría la persona usuaria (input de archivo)
     const jsonPath = path.join(out, `proyecto-${count}.json`);
     fs.writeFileSync(jsonPath, JSON.stringify(project));
-    page.on('dialog', (d) => d.accept());
+    
     await page.setInputFiles('#importInput', jsonPath);
     const t0 = Date.now();
     await page.waitForFunction(() => /Guardado|válido|pesar/.test(document.querySelector('#saveStatus').textContent + document.querySelector('#toast').textContent), null, { timeout: 120000 });
