@@ -98,6 +98,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .choice-grid { display: grid; gap: .7rem; }
 .choice-grid.disciplines { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .choice-grid.purposes { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.choice-grid.doc-types { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .choice-card { position: relative; min-height: 116px; border: 1px solid var(--line); border-radius: 14px; padding: 1rem; background: white; text-align: left; cursor: pointer; transition: border-color .18s, transform .18s, box-shadow .18s; }
 .choice-card:hover { transform: translateY(-2px); border-color: #898980; box-shadow: 0 10px 24px rgba(30,26,18,.07); }
 .choice-card.selected { border: 2px solid var(--ink); padding: calc(1rem - 1px); background: var(--lime); }
@@ -283,7 +284,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   .workspace { padding: 40px 20px 70px; }
   .panel-heading h2 { font-size: clamp(2.2rem, 11vw, 4rem); }
   .choice-grid.disciplines { grid-template-columns: repeat(2, 1fr); }
-  .choice-grid.purposes, .template-grid { grid-template-columns: repeat(2, 1fr); }
+  .choice-grid.purposes, .choice-grid.doc-types, .template-grid { grid-template-columns: repeat(2, 1fr); }
   .guide-layout, .form-grid.two-columns, .work-editor-grid { grid-template-columns: 1fr; }
   .inline-heading { align-items: flex-start; flex-direction: column; }
   .reference-grid { grid-template-columns: 1fr; }
@@ -295,6 +296,11 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 
 @media screen and (max-width: 520px) {
   .p-modules { grid-template-columns: 1fr; }
+  .p-grid-2 { grid-template-columns: 1fr; }
+  .item > summary { grid-template-columns: 1fr; }
+  .pills { justify-content: flex-start; }
+  .doc-page.certificate .cert-body { grid-template-columns: 1fr; }
+  .doc-page.certificate dl { grid-template-columns: 1fr; }
   .brand strong { font-size: .85rem; }
   .top-actions .button.primary { padding-inline: .8rem; }
   .section-heading { align-items: stretch; flex-direction: column; }
@@ -317,7 +323,8 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 @page { size: A4; margin: 0; }
 @media print {
   html, body { background: var(--print-bg, white) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .no-print, .app-shell, .toast, .missing { display: none !important; }
+  .no-print, .app-shell, .panel-view, .toast, .missing { display: none !important; }
+  #printArea .doc-page.certificate { height: 296mm; min-height: 0; overflow: hidden; }
   #printArea { display: block !important; }
   /* Las páginas crecen si el contenido no cabe: nunca se recorta texto en el PDF. */
   #printArea .doc-page { width: 210mm; min-height: 297mm; height: auto; overflow: visible; padding: 18mm; page-break-after: always; break-after: page; box-shadow: none; -webkit-box-decoration-break: clone; box-decoration-break: clone; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -385,8 +392,8 @@ a.p-module:hover { transform: translateY(-2px); border-color: var(--ink); }
 .p-verb { color: var(--accent-dark); font-size: .62rem; font-weight: 800; letter-spacing: .12em; }
 .p-module p { margin: .6rem 0 0; color: var(--muted); font-size: .78rem; line-height: 1.55; }
 .p-go { margin-top: auto; padding-top: 1rem; font-size: .78rem; font-weight: 700; }
-body[data-view="inicio"] .app-shell, body[data-view="inicio"] .dossier-only { display: none !important; }
-body:not([data-view="inicio"]) .panel-view { display: none !important; }
+body:not([data-view="dossier"]) .app-shell, body:not([data-view="dossier"]) .dossier-only { display: none !important; }
+body[data-view="dossier"] .panel-view { display: none !important; }
 
 /* ---------- Diálogo de confirmación propio (los diálogos del navegador no funcionan en todas partes) ---------- */
 .confirm-dialog { max-width: min(440px, calc(100vw - 32px)); border: 0; border-radius: 16px; padding: 1.4rem; background: var(--panel); color: var(--ink); box-shadow: var(--shadow); }
@@ -404,6 +411,62 @@ body:not([data-view="inicio"]) .panel-view { display: none !important; }
 #printArea.pdf-render .doc-page .cover-bottom { left: 68px; right: 68px; bottom: 60px; }
 #printArea.pdf-render .doc-page .work-page-image { max-height: 642px; }
 #printArea.pdf-render .doc-page .portrait-image { max-height: 340px; }
+
+/* ---------- Módulos del panel: convocatorias, correo y certificados ---------- */
+.p-section + .p-section { margin-top: 0; }
+.p-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .8rem; margin-bottom: 1.2rem; }
+.p-toolbar .field { min-width: 200px; }
+.p-note { margin: 0 0 1.6rem; border-left: 3px solid var(--accent); padding: .8rem 1rem; background: #fff4ef; color: #4c403a; font-size: .8rem; line-height: 1.55; }
+.p-card { margin-top: 2.4rem; border: 1px solid var(--line); border-radius: 16px; padding: 1.3rem; background: white; }
+.p-card > h2 { margin: 0 0 .3rem; font: 500 1.6rem/1.1 Georgia, serif; }
+.p-card > p { margin: 0 0 1.1rem; color: var(--muted); font-size: .82rem; line-height: 1.55; }
+.p-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem; }
+.p-grid-2 .wide { grid-column: 1 / -1; }
+.item-list { display: grid; gap: .8rem; }
+.item { border: 1px solid var(--line); border-radius: 14px; background: white; }
+.item > summary { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .4rem 1rem; align-items: center; padding: 1rem 1.1rem; cursor: pointer; list-style: none; }
+.item > summary::-webkit-details-marker { display: none; }
+.item > summary strong { font: 500 1.15rem/1.2 Georgia, serif; overflow-wrap: anywhere; }
+.item > summary small { grid-column: 1 / -1; color: var(--muted); font-size: .72rem; }
+.item-body { display: grid; gap: .9rem; border-top: 1px solid var(--line); padding: 1rem 1.1rem 1.2rem; }
+.pills { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .35rem; }
+.pill { border-radius: 999px; padding: .22rem .55rem; font-size: .6rem; font-weight: 800; letter-spacing: .06em; white-space: nowrap; border: 1px solid var(--line); color: var(--muted); background: transparent; }
+.pill.ok { border-color: #9fcfaf; background: #eaf6ee; color: #23683d; }
+.pill.warn { border-color: #f0b49f; background: #fff1ea; color: #9a3412; }
+.pill.urgent { border-color: #e48b76; background: #ffe3da; color: #8f1f0f; }
+.pill.done { border-color: var(--ink); background: var(--ink); color: white; }
+.checklist { display: grid; gap: .35rem; margin: 0; padding: 0; list-style: none; }
+.checklist li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: .55rem; align-items: center; font-size: .82rem; }
+.checklist li.is-done span { color: var(--muted); text-decoration: line-through; }
+.checklist button { border: 0; background: transparent; color: #a22819; cursor: pointer; font-size: 1rem; }
+.inline-add { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .5rem; }
+.inline-add input { min-width: 0; border: 1px solid var(--line); border-radius: 10px; padding: .6rem .75rem; }
+.row-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+.button.small { min-height: 34px; padding: .45rem .8rem; font-size: .74rem; }
+.email-output { width: 100%; min-height: 260px; border: 1px solid var(--line); border-radius: 10px; padding: .9rem; background: #f8f5ee; font: .85rem/1.6 ui-sans-serif, system-ui, sans-serif; resize: vertical; }
+.tips { margin: .2rem 0 0; padding-left: 1.1rem; color: var(--muted); font-size: .78rem; line-height: 1.6; }
+.item-body > .button, .item-body > .text-button { justify-self: start; }
+#printArea.pdf-render .doc-page.certificate { height: 1120px; min-height: 0; overflow: hidden; }
+.p-module .p-meta { margin-top: .6rem; font-size: .72rem; font-weight: 700; color: var(--ink); }
+.check-field { display: flex; align-items: center; gap: .5rem; font-size: .8rem; }
+.doc-type-fields { margin-top: 1.6rem; border-top: 1px solid var(--line); padding-top: 1.4rem; display: grid; gap: 1rem; }
+.doc-type-fields > h3 { margin: 0; font: 500 1.3rem Georgia, serif; }
+.doc-type-fields > p { margin: -.4rem 0 0; color: var(--muted); font-size: .78rem; }
+
+/* Certificado de autenticidad (página A4 del PDF) */
+.doc-page.certificate { display: flex; flex-direction: column; background: #fbf9f4; color: #161616; }
+.doc-page.certificate .cert-head { display: flex; justify-content: space-between; gap: 1rem; border-bottom: 1px solid #161616; padding-bottom: 1rem; font: 700 .7rem/1.3 ui-monospace, monospace; letter-spacing: .12em; text-transform: uppercase; }
+.doc-page.certificate h1 { margin: 2.4rem 0 1.6rem; font: 500 3.1rem/1 Georgia, serif; letter-spacing: -.04em; }
+.doc-page.certificate .cert-body { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 2rem; align-items: start; }
+.doc-page.certificate .cert-body.no-image { grid-template-columns: 1fr; }
+.doc-page.certificate dl { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: .65rem 1rem; margin: 0; font-size: .9rem; }
+.doc-page.certificate dt { color: #686a64; font-size: .7rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding-top: .15rem; }
+.doc-page.certificate dd { margin: 0; overflow-wrap: anywhere; }
+.doc-page.certificate .cert-image { width: 220px; height: 220px; object-fit: contain; background: #efebe2; }
+.doc-page.certificate .cert-statement { margin: 2.2rem 0 0; font: 400 1rem/1.75 Georgia, serif; }
+.doc-page.certificate .cert-sign { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; margin-top: auto; padding-top: 3rem; font-size: .78rem; }
+.doc-page.certificate .cert-sign span { display: block; border-top: 1px solid #161616; padding-top: .5rem; }
+.doc-page.certificate .cert-foot { margin-top: 1.6rem; color: #686a64; font-size: .68rem; line-height: 1.5; }
 
 .prototype-badge{border:1px solid var(--line);border-radius:999px;padding:.35rem .6rem;color:var(--muted);font-size:.6rem;font-weight:800;letter-spacing:.09em}
 </style>
@@ -425,15 +488,15 @@ body:not([data-view="inicio"]) .panel-view { display: none !important; }
     <aside class="p-sidebar" aria-label="Módulos">
       <p class="eyebrow">MÓDULOS</p>
       <nav class="p-nav" aria-label="Panel">
-        <a href="#inicio" aria-current="page">Inicio</a>
+        <a href="#inicio" data-section-link="inicio" aria-current="page">Inicio</a>
         <a href="#configurar">ArtDossier Studio <small>PRESENTAR</small></a>
-        <span aria-disabled="true">Mi estudio artístico <small>PRONTO</small></span>
-        <span aria-disabled="true">Convocatorias <small>PRONTO</small></span>
+        <a href="#convocatorias" data-section-link="convocatorias">Convocatorias <small>POSTULAR</small></a>
+        <a href="#estudio" data-section-link="estudio">Mi estudio artístico <small>GESTIONAR</small></a>
       </nav>
       <div class="sidebar-note"><strong>Tus datos, en privado</strong><p id="panelPrivacy">Nada se publica. Tus proyectos quedan guardados en este navegador; descarga un respaldo JSON de vez en cuando.</p></div>
     </aside>
     <main class="p-main" id="panelMain" tabindex="-1">
-      <div class="p-wrap">
+      <div class="p-wrap p-section" data-section="inicio">
         <p class="eyebrow">PANEL DE CACHIVARTE</p>
         <h1 class="p-title" id="greeting">Tu estudio, en un solo lugar.</h1>
         <p class="p-lead">Presenta tu obra, organiza tu práctica y prepara postulaciones. Cada módulo es independiente: lo que es privado no se mezcla con lo que publicas.</p>
@@ -476,19 +539,76 @@ body:not([data-view="inicio"]) .panel-view { display: none !important; }
             <p>Dossier profesional por disciplina y propósito: portada, statement, biografía, obras, CV y contacto. Exporta a PDF.</p>
             <span class="p-go">Abrir →</span>
           </a>
-          <div class="p-module soon" aria-disabled="true">
-            <span class="p-tag off">PRÓXIMAMENTE</span>
-            <h3>Mi estudio artístico</h3>
-            <span class="p-verb">GESTIONAR</span>
-            <p>Inventario de obras, calculadora de precios, ventas, certificados y finanzas básicas. Privado por defecto, nunca entra al PDF del dossier.</p>
-          </div>
-          <div class="p-module soon" aria-disabled="true">
-            <span class="p-tag off">PRÓXIMAMENTE</span>
+          <a class="p-module" href="#convocatorias">
+            <span class="p-tag on">DISPONIBLE</span>
             <h3>Convocatorias</h3>
             <span class="p-verb">POSTULAR</span>
-            <p>Seguimiento de fondos, residencias y salones con requisitos verificados en la fuente oficial, plazos y checklist por postulación.</p>
-          </div>
+            <p>Seguimiento de fondos, residencias, ferias y galerías: plazos, bases verificadas, entregables y correo de presentación.</p>
+            <span class="p-meta" id="pOppMeta">Sin convocatorias registradas</span>
+            <span class="p-go">Abrir →</span>
+          </a>
+          <a class="p-module" href="#estudio">
+            <span class="p-tag on">DISPONIBLE</span>
+            <h3>Mi estudio artístico</h3>
+            <span class="p-verb">GESTIONAR</span>
+            <p>Certificados de autenticidad propios para tus obras. Inventario, precios y finanzas llegan después. Nunca entra al PDF del dossier.</p>
+            <span class="p-meta" id="pCertMeta">Sin certificados</span>
+            <span class="p-go">Abrir →</span>
+          </a>
         </div>
+      </div>
+
+      <div class="p-wrap p-section" data-section="convocatorias" hidden>
+        <p class="eyebrow">POSTULAR</p>
+        <h1 class="p-title">Convocatorias</h1>
+        <p class="p-lead">Registra cada oportunidad a partir de sus bases oficiales y prepara la postulación paso a paso.</p>
+        <p class="p-note">Las bases de cada convocatoria son la única fuente de verdad: confirma fechas, elegibilidad y archivos en el sitio oficial. Una convocatoria queda «por verificar» hasta que marques que revisaste sus bases. Los directorios antiguos de espacios y ferias sirven solo como pista.</p>
+        <div class="p-toolbar">
+          <button class="button primary" id="addOpportunity" type="button">＋ Nueva convocatoria</button>
+          <label class="field"><span class="sr-only">Mostrar</span><select id="opportunityFilter"><option value="activas">Activas</option><option value="todas">Todas</option><option value="cerradas">Cerradas y archivadas</option></select></label>
+        </div>
+        <div class="item-list" id="opportunityList"></div>
+        <div class="empty-state" id="opportunityEmpty"><span aria-hidden="true">◇</span><h3>Aún no registras convocatorias</h3><p>Añade una con el enlace de sus bases oficiales y su fecha de cierre.</p></div>
+
+        <section class="p-card" id="emailTool" aria-labelledby="emailTitle">
+          <h2 id="emailTitle">Correo de presentación</h2>
+          <p>Un primer contacto breve y personalizado con una galería, curaduría, residencia o convocatoria. Se arma con los datos de tu dossier; revísalo y ajústalo antes de enviarlo.</p>
+          <div class="p-grid-2">
+            <label class="field"><span>Para (persona o equipo)</span><input id="emailTo" type="text" maxlength="120" placeholder="Equipo de programación"></label>
+            <label class="field"><span>Espacio u organización</span><input id="emailPlace" type="text" maxlength="150" placeholder="Nombre del espacio"></label>
+            <label class="field wide"><span>Por qué este espacio</span><textarea id="emailWhy" rows="2" maxlength="600" placeholder="Qué de su programa se relaciona con tu obra (algo concreto que hayas visto)"></textarea></label>
+            <label class="field wide"><span>Qué propones</span><textarea id="emailAsk" rows="2" maxlength="600" placeholder="Ej. presentar la serie para su programa 2027 o una conversación breve"></textarea></label>
+            <label class="field wide"><span>Enlace a tu dossier o portafolio</span><input id="emailLink" type="url" maxlength="300" placeholder="https://…"></label>
+          </div>
+          <div class="row-actions" style="margin: 1rem 0 .8rem"><button class="button primary small" id="emailBuild" type="button">Redactar correo</button><button class="button ghost small" id="emailCopy" type="button">Copiar texto</button></div>
+          <label class="field"><span>Borrador</span><textarea class="email-output" id="emailOutput" rows="12" maxlength="6000" placeholder="El borrador aparecerá aquí."></textarea></label>
+          <ul class="tips">
+            <li>Escribe a una persona o equipo concreto y menciona algo real de su programa.</li>
+            <li>Una sola propuesta clara; el detalle va en el dossier enlazado.</li>
+            <li>Prefiere un enlace a un adjunto pesado, salvo que las bases pidan un archivo.</li>
+            <li>Si no hay respuesta, un único seguimiento cordial después de unas semanas es suficiente.</li>
+          </ul>
+        </section>
+      </div>
+
+      <div class="p-wrap p-section" data-section="estudio" hidden>
+        <p class="eyebrow">GESTIONAR · PRIVADO</p>
+        <h1 class="p-title">Mi estudio artístico</h1>
+        <p class="p-lead">Herramientas de gestión para tu práctica. Lo que guardas aquí es privado y nunca se agrega al PDF del dossier.</p>
+        <section class="p-card" aria-labelledby="certTitle" style="margin-top: 0">
+          <h2 id="certTitle">Certificados de autenticidad</h2>
+          <p>Emite un certificado propio para cada obra vendida o entregada: identifica la obra, su edición y la fecha. Imprímelo y fírmalo a mano; el documento no lleva firmas digitales ni sellos de terceros.</p>
+          <div class="p-toolbar">
+            <label class="field"><span>Desde una obra del dossier</span><select id="certFromWork"></select></label>
+            <button class="button primary" id="addCertificate" type="button">＋ Nuevo certificado</button>
+          </div>
+          <div class="item-list" id="certificateList"></div>
+          <div class="empty-state" id="certificateEmpty"><span aria-hidden="true">✦</span><h3>Aún no hay certificados</h3><p>Elige una obra de tu dossier o empieza uno en blanco.</p></div>
+        </section>
+        <section class="p-card" aria-labelledby="soonTitle">
+          <h2 id="soonTitle">Próximamente</h2>
+          <ul class="tips"><li>Inventario de obras con estado (disponible, reservada, vendida) y ubicación privada.</li><li>Calculadora de precios con desglose de costos, comisión y margen.</li><li>Finanzas básicas: ingresos y gastos por proyecto.</li></ul>
+        </section>
       </div>
     </main>
   </div>
@@ -502,23 +622,26 @@ body:not([data-view="inicio"]) .panel-view { display: none !important; }
         <button class="nav-button" type="button" data-tab="portada"><span>03</span> Portada</button>
         <button class="nav-button" type="button" data-tab="statement"><span>04</span> Statement</button>
         <button class="nav-button" type="button" data-tab="bio"><span>05</span> Biografía</button>
+        <button class="nav-button" type="button" data-tab="propuesta" hidden><span>06</span> Propuesta</button>
         <button class="nav-button" type="button" data-tab="obras"><span>06</span> Obras</button>
         <button class="nav-button" type="button" data-tab="cv"><span>07</span> Currículum</button>
         <button class="nav-button" type="button" data-tab="contacto"><span>08</span> Contacto</button>
         <button class="nav-button" type="button" data-tab="referentes"><span>09</span> Referentes</button>
       </nav>
-      <div class="sidebar-note"><strong>Tu voz, tus datos</strong><p>Los ejemplos son ficticios y nunca se mezclan con tu dossier. Tu proyecto se guarda solo en este navegador: descarga un respaldo JSON con frecuencia.</p></div>
+      <div class="sidebar-note"><strong>Tu voz, tus datos</strong><p>Los ejemplos son ficticios y nunca se mezclan con tu dossier. Descarga un respaldo JSON de vez en cuando.</p></div>
       <button class="text-button sidebar-reset" id="resetButton" type="button">Empezar un proyecto nuevo</button>
     </aside>
     <main class="workspace" id="workspace" tabindex="-1">
       <section class="panel active" id="tab-configurar" aria-labelledby="configurarTitle">
-        <div class="panel-heading"><p class="eyebrow">PRIMER PASO</p><h2 id="configurarTitle">¿Qué vas a presentar?</h2><p>La disciplina y el propósito adaptan las recomendaciones. Puedes cambiarlos sin perder información.</p></div>
+        <div class="panel-heading"><p class="eyebrow">PRIMER PASO</p><h2 id="configurarTitle">¿Qué vas a presentar?</h2><p>La disciplina, el tipo de documento y el propósito adaptan la estructura y las recomendaciones. Puedes cambiarlos sin perder información.</p></div>
         <div class="section-heading"><div><span class="section-number">01</span><h3>Disciplina principal</h3></div><label class="search-field"><span class="sr-only">Buscar disciplina</span><input id="disciplineSearch" type="search" placeholder="Buscar disciplina…" autocomplete="off"></label></div>
         <div class="choice-grid disciplines" id="disciplineGrid"></div>
         <label class="field custom-discipline"><span>Otra disciplina o práctica multidisciplinaria</span><input id="customDiscipline" type="text" maxlength="100" placeholder="Ej. arte textil y performance"></label>
-        <div class="section-heading spaced"><div><span class="section-number">02</span><h3>Propósito del dossier</h3></div></div>
+        <div class="section-heading spaced"><div><span class="section-number">02</span><h3>Tipo de documento</h3></div></div>
+        <div class="choice-grid doc-types" id="docTypeGrid"></div>
+        <div class="section-heading spaced"><div><span class="section-number">03</span><h3>Propósito</h3></div></div>
         <div class="choice-grid purposes" id="purposeGrid"></div>
-        <div class="section-heading spaced"><div><span class="section-number">03</span><h3>Estilo editorial</h3></div></div>
+        <div class="section-heading spaced"><div><span class="section-number">04</span><h3>Estilo editorial</h3></div></div>
         <div class="template-grid" id="templateGrid"></div>
         <div class="recommendation" id="recommendation" aria-live="polite"></div>
         <button class="button primary large" id="continueButton" type="button">Continuar con la guía <span aria-hidden="true">→</span></button>
@@ -528,7 +651,8 @@ body:not([data-view="inicio"]) .panel-view { display: none !important; }
         <div class="guide-layout">
           <article class="guide-card"><span class="guide-index">A</span><h3>Qué debe demostrar</h3><ul id="guideFocus"></ul></article>
           <article class="guide-card"><span class="guide-index">B</span><h3>Checklist editorial</h3><ul id="guideChecklist"></ul></article>
-          <article class="guide-card wide"><span class="guide-index">C</span><h3>Ejemplo didáctico original</h3><div id="guideExample" class="example-box"></div></article>
+          <article class="guide-card wide"><span class="guide-index">C</span><h3 id="structureTitle">Estructura del documento</h3><ol class="tips" id="guideStructure"></ol></article>
+          <article class="guide-card wide"><span class="guide-index">D</span><h3>Ejemplo didáctico original</h3><div id="guideExample" class="example-box"></div></article>
         </div>
         <button class="button primary large" type="button" data-go="portada">Empezar a crear <span aria-hidden="true">→</span></button>
       </section>
@@ -548,13 +672,37 @@ body:not([data-view="inicio"]) .panel-view { display: none !important; }
         <div class="panel-heading"><p class="eyebrow">CREAR / STATEMENT</p><h2 id="statementTitle">Explica las preguntas que sostienen tu obra.</h2><p>No existe una longitud universal. Ajusta el texto a cada convocatoria y evita afirmaciones que no puedas respaldar.</p></div>
         <label class="field"><span>Statement del artista</span><textarea id="statement" rows="13" maxlength="5000" placeholder="¿Qué investigas? ¿Cómo se relacionan materiales, procesos y contexto?"></textarea><small id="statementCount">0 palabras</small></label>
         <aside class="editorial-tip"><strong>Una estructura útil</strong><ol><li>Pregunta o impulso central.</li><li>Materiales y decisiones de proceso.</li><li>Relación con el contexto o el público.</li></ol></aside>
+        <div class="doc-type-fields" data-doc-type="catalogo" hidden>
+          <h3>Texto curatorial y créditos</h3>
+          <p>Propio del catálogo artístico. Incluye un texto curatorial solo si existe y tienes autorización para publicarlo.</p>
+          <label class="field"><span>Texto curatorial (opcional)</span><textarea data-bind="curatorial.text" rows="9" maxlength="6000" placeholder="Texto de la curadora o curador de la muestra"></textarea></label>
+          <label class="field"><span>Autoría del texto</span><input data-bind="curatorial.author" type="text" maxlength="150" placeholder="Nombre de quien lo escribió"></label>
+          <label class="field"><span>Créditos del catálogo</span><textarea data-bind="credits" rows="4" maxlength="1500" placeholder="Fotografía: …&#10;Diseño: …&#10;Textos: …"></textarea></label>
+        </div>
       </section>
       <section class="panel" id="tab-bio" aria-labelledby="bioTitle" hidden>
         <div class="panel-heading"><p class="eyebrow">CREAR / BIOGRAFÍA</p><h2 id="bioTitle">Trayectoria verificable, escrita con claridad.</h2><p>Incluye solo formación, exposiciones o hitos reales. Una práctica emergente no necesita fingir credenciales.</p></div>
         <div class="form-grid two-columns"><label class="field"><span>Biografía</span><textarea id="bio" rows="12" maxlength="4000" placeholder="Escribe en tercera persona y prioriza los hechos relevantes para este dossier."></textarea><small id="bioCount">0 palabras</small></label><div><label class="upload-field compact" id="portraitDrop"><input id="portraitInput" type="file" accept="image/jpeg,image/png,image/webp" hidden><span class="upload-icon" aria-hidden="true">＋</span><strong>Retrato opcional</strong><span>Usa una foto propia o con permiso.</span><img id="portraitPreview" alt="Vista previa del retrato" hidden></label><button class="text-button" id="removePortrait" type="button" hidden>Quitar retrato</button></div></div>
+        <div class="doc-type-fields" data-doc-type="portafolio" hidden>
+          <h3>Servicios y especialidad</h3>
+          <p>Propio del portafolio comercial: qué haces para clientes, estudios o marcas.</p>
+          <label class="field"><span>Servicios o especialidad</span><textarea data-bind="services" rows="6" maxlength="3000" placeholder="Ej. murales por encargo, ilustración editorial, piezas cerámicas para interiorismo"></textarea></label>
+        </div>
+      </section>
+      <section class="panel" id="tab-propuesta" aria-labelledby="propuestaTitle" hidden>
+        <div class="panel-heading"><p class="eyebrow">CREAR / PROPUESTA</p><h2 id="propuestaTitle">Una idea clara y realizable.</h2><p>Completa solo lo que pidan las bases de la convocatoria o el espacio. Cada oportunidad define sus propios requisitos.</p></div>
+        <div class="form-stack">
+          <label class="field"><span>Título de la propuesta o muestra</span><input data-bind="proposal.title" type="text" maxlength="150" placeholder="Título de trabajo"></label>
+          <label class="field"><span>Idea o concepto</span><textarea data-bind="proposal.concept" rows="6" maxlength="3000" placeholder="Qué quieres presentar y por qué"></textarea></label>
+          <label class="field"><span>Objetivos</span><textarea data-bind="proposal.objectives" rows="4" maxlength="2000" placeholder="Qué busca lograr la propuesta"></textarea></label>
+          <label class="field"><span>Espacio, montaje y requerimientos técnicos</span><textarea data-bind="proposal.technical" rows="4" maxlength="2000" placeholder="Superficie, muros, iluminación, equipos, tiempos de montaje"></textarea></label>
+          <label class="field"><span>Cronograma</span><textarea data-bind="proposal.schedule" rows="4" maxlength="2000" placeholder="Etapas y fechas estimadas"></textarea></label>
+          <label class="field"><span>Presupuesto (resumen)</span><textarea data-bind="proposal.budget" rows="4" maxlength="2000" placeholder="Partidas principales; detalle según las bases"></textarea></label>
+        </div>
       </section>
       <section class="panel" id="tab-obras" aria-labelledby="obrasTitle" hidden>
         <div class="panel-heading inline-heading"><div><p class="eyebrow">CREAR / OBRAS</p><h2 id="obrasTitle">Construye una secuencia, no un inventario.</h2><p>Empieza con una obra fuerte y ordena el resto para mostrar relaciones, ritmo y escala.</p></div><button class="button primary" id="addWorkButton" type="button">＋ Añadir obra</button></div>
+        <label class="check-field doc-type-inline" data-doc-type="portafolio" hidden><input type="checkbox" data-bind="showPrices"> Mostrar precios en el PDF (por defecto no se muestran)</label>
         <div id="worksList" class="works-list"></div><div id="worksEmpty" class="empty-state"><span aria-hidden="true">□</span><h3>Aún no hay obras</h3><p>Añade la primera pieza para comenzar la secuencia editorial.</p><button class="button ghost" type="button" data-add-work>Añadir obra</button></div>
       </section>
       <section class="panel" id="tab-cv" aria-labelledby="cvTitle" hidden>
@@ -640,6 +788,28 @@ const PURPOSES = [
   { id: 'general', icon: '↗', label: 'Presentación general', short: 'Panorama flexible', guidance: 'Construye una versión base breve y adaptable. Presenta una práctica reconocible sin intentar incluir toda tu producción.' }
 ];
 
+// Tipos de entrega: un dossier no es un catálogo (hallazgo del material de formación VALA).
+const DOC_TYPES = [
+  { id: 'dossier', icon: '▤', label: 'Dossier artístico', short: 'Galerías y contactos profesionales', fallbackTitle: 'Dossier artístico',
+    structure: ['Portada con tu nombre y el título', 'Statement', 'Biografía breve', 'Obras seleccionadas con ficha técnica', 'Currículum seleccionado', 'Contacto'],
+    tip: 'Claro y selectivo: fácil de leer y de reenviar.' },
+  { id: 'portafolio', icon: '▦', label: 'Portafolio comercial', short: 'Clientes, encargos y marcas', fallbackTitle: 'Portafolio',
+    structure: ['Portada', 'Servicios o especialidad', 'Proyectos seleccionados con contexto y escala', 'Disponibilidad y, si lo decides, precios', 'Biografía breve', 'Contacto'],
+    tip: 'Prioriza lo que le sirve al cliente: alcance, escala, plazos y proyectos comparables.' },
+  { id: 'catalogo', icon: '▥', label: 'Catálogo artístico', short: 'Exposición u obra consolidada', fallbackTitle: 'Catálogo',
+    structure: ['Portada', 'Presentación (statement)', 'Texto curatorial, solo si existe y está autorizado', 'Obras en secuencia con fichas completas', 'Biografía y trayectoria', 'Créditos de quienes participaron'],
+    tip: 'Jerarquía editorial más extensa: secuencia de obra, fichas completas y créditos.' },
+  { id: 'propuesta', icon: '◇', label: 'Propuesta expositiva', short: 'Convocatorias, fondos y residencias', fallbackTitle: 'Propuesta expositiva',
+    structure: ['Portada', 'Propuesta: idea, objetivos, montaje, cronograma y presupuesto', 'Statement', 'Obras o imágenes de referencia', 'Currículum', 'Contacto y anexos que pidan las bases'],
+    tip: 'Sigue el orden y los límites de las bases: lo que pidan las bases manda sobre esta guía.' }
+];
+
+const AVAILABILITY = ['', 'Disponible', 'Reservada', 'Vendida', 'Colección privada', 'No disponible para venta'];
+
+function findDocType(id) {
+  return DOC_TYPES.find((item) => item.id === id) || DOC_TYPES[0];
+}
+
 const TEMPLATES = [
   { id: 'museo', label: 'Museo / galería', short: 'Sobria, aireada, centrada en la obra', swatch: 'swatch-museo' },
   { id: 'editorial', label: 'Editorial creativo', short: 'Tipografía expresiva y color', swatch: 'swatch-editorial' },
@@ -679,7 +849,7 @@ function getRecommendation(disciplineId, purposeId, customDiscipline = '') {
   const discipline = findDiscipline(disciplineId);
   const purpose = findPurpose(purposeId);
   const name = customDiscipline.trim() || discipline.label;
-  return `Para ${name} con destino a ${purpose.label.toLowerCase()}: ${purpose.guidance}`;
+  return `${findDocType(state.documentType).label} para ${name} con destino a ${purpose.label.toLowerCase()}: ${purpose.guidance} ${findDocType(state.documentType).tip}`;
 }
 
 
@@ -720,7 +890,13 @@ function createEmptyProject() {
     },
     works: [],
     cv: { education: [], solo: [], group: [], awards: [], collections: [], press: [] },
-    contact: { email: '', phone: '', website: '', instagram: '', gallery: '', studio: '' }
+    contact: { email: '', phone: '', website: '', instagram: '', gallery: '', studio: '' },
+    documentType: 'dossier',
+    curatorial: { text: '', author: '' },
+    credits: '',
+    services: '',
+    showPrices: false,
+    proposal: { title: '', concept: '', objectives: '', technical: '', schedule: '', budget: '' }
   };
 }
 
@@ -739,7 +915,9 @@ function normalizeWorks(works) {
     dimensions: text(work?.dimensions ?? work?.dims, 120),
     edition: text(work?.edition, 100),
     description: text(work?.description ?? work?.desc, 1500),
-    image: safeImage(work?.image ?? work?.img)
+    image: safeImage(work?.image ?? work?.img),
+    availability: AVAILABILITY.includes(work?.availability) ? work.availability : '',
+    price: text(work?.price, 60)
   }));
 }
 
@@ -782,6 +960,15 @@ function normalizeProject(input) {
       email: text(contact.email, 200), phone: text(contact.phone ?? contact.telefono, 50),
       website: text(contact.website ?? contact.web, 300), instagram: text(contact.instagram, 100),
       gallery: text(contact.gallery ?? contact.galeria, 150), studio: text(contact.studio ?? contact.estudio, 150)
+    },
+    documentType: findDocType(source.documentType).id,
+    curatorial: { text: text(source.curatorial?.text, 6000), author: text(source.curatorial?.author, 150) },
+    credits: text(source.credits, 1500),
+    services: text(source.services, 3000),
+    showPrices: source.showPrices === true,
+    proposal: {
+      title: text(source.proposal?.title, 150), concept: text(source.proposal?.concept, 3000), objectives: text(source.proposal?.objectives, 2000),
+      technical: text(source.proposal?.technical, 2000), schedule: text(source.proposal?.schedule, 2000), budget: text(source.proposal?.budget, 2000)
     }
   };
 }
@@ -794,6 +981,12 @@ function wordCount(value) {
 function fileStem(value) {
   const cleaned = text(value, 100).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   return cleaned || 'artdossier';
+}
+
+function withStudio(payload) {
+  const data = JSON.parse(payload);
+  data.studio = normalizeStudio(studioData);
+  return JSON.stringify(data, null, 2);
 }
 
 function exportPayload(project) {
@@ -859,7 +1052,7 @@ function openDatabase() {
 
 // Espacio privado en claude.ai cuando la app corre como artefacto: el texto va a un documento
 // privado (data/users/<id>/artdossier) y las imágenes a assets. Fuera del artefacto todo es null.
-const cloud = { doc: null, assets: null, downloads: null };
+const cloud = { doc: null, studioDoc: null, assets: null, downloads: null };
 
 async function connectCloud() {
   if (typeof window.claude?.use !== 'function') return;
@@ -869,7 +1062,7 @@ async function connectCloud() {
   cloud.downloads = downloads;
   if (db && user) {
     const id = await Promise.resolve(user.id()).catch(() => null);
-    if (id) cloud.doc = db.collection(`data/users/${id}`).doc('artdossier');
+    if (id) { cloud.doc = db.collection(`data/users/${id}`).doc('artdossier'); cloud.studioDoc = db.collection(`data/users/${id}`).doc('estudio'); }
   }
 }
 
@@ -984,6 +1177,411 @@ function flushSave() {
   saveProject();
 }
 
+const OPP_STATUSES = [
+  ['investigar', 'Por investigar'], ['preparando', 'Preparando'], ['enviada', 'Enviada'], ['respuesta', 'Esperando respuesta'],
+  ['aceptada', 'Seleccionada'], ['rechazada', 'No seleccionada'], ['archivada', 'Archivada']
+];
+const OPP_SUGGESTED = ['Dossier o portafolio en PDF', 'Statement', 'Currículum artístico', 'Imágenes de obra con ficha técnica', 'Propuesta o proyecto', 'Presupuesto', 'Cronograma', 'Carta de motivación', 'Documentos personales que pidan las bases'];
+
+function createEmptyStudio() {
+  return { id: 'studio', version: 1, updatedAt: '', opportunities: [], certificates: [], certificateSeq: 0 };
+}
+
+function safeDate(value) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(String(value || '')) ? value : '';
+}
+
+function normalizeStudio(input) {
+  const source = input && typeof input === 'object' ? input : {};
+  const statuses = OPP_STATUSES.map(([id]) => id);
+  return {
+    id: 'studio', version: 1, updatedAt: text(source.updatedAt, 40),
+    certificateSeq: Math.max(0, Math.min(99999, Number(source.certificateSeq) || 0)),
+    opportunities: (Array.isArray(source.opportunities) ? source.opportunities : []).slice(0, 200).map((item) => ({
+      id: text(item?.id || uid('opp'), 120), name: text(item?.name, 200), organization: text(item?.organization, 200), url: text(item?.url, 500),
+      place: text(item?.place, 150), deadline: safeDate(item?.deadline), deadlineNote: text(item?.deadlineNote, 120),
+      status: statuses.includes(item?.status) ? item.status : 'investigar', verifiedAt: safeDate(item?.verifiedAt),
+      eligibility: text(item?.eligibility, 2000), files: text(item?.files, 2000), costs: text(item?.costs, 1500), notes: text(item?.notes, 3000),
+      checklist: (Array.isArray(item?.checklist) ? item.checklist : []).slice(0, 60).map((entry) => ({ id: text(entry?.id || uid('req'), 120), text: text(entry?.text, 300), done: entry?.done === true }))
+    })),
+    certificates: (Array.isArray(source.certificates) ? source.certificates : []).slice(0, 500).map((item) => ({
+      id: text(item?.id || uid('cert'), 120), number: text(item?.number, 40), workId: text(item?.workId, 120), artist: text(item?.artist, 150),
+      title: text(item?.title, 200), year: text(item?.year, 20), medium: text(item?.medium, 300), dimensions: text(item?.dimensions, 120),
+      edition: text(item?.edition, 100), copy: text(item?.copy, 60), issuedOn: safeDate(item?.issuedOn), place: text(item?.place, 150),
+      holder: text(item?.holder, 200), includeHolder: item?.includeHolder === true, notes: text(item?.notes, 1500)
+    }))
+  };
+}
+
+let studioData = createEmptyStudio();
+let studioTimer = 0;
+let studioChain = Promise.resolve();
+
+async function readStudio() {
+  let local = createEmptyStudio();
+  try {
+    const db = await openDatabase();
+    const result = await new Promise((resolve, reject) => {
+      const request = db.transaction(STORE_NAME, 'readonly').objectStore(STORE_NAME).get('studio');
+      request.onsuccess = () => resolve(request.result); request.onerror = () => reject(request.error);
+    });
+    db.close();
+    if (result) local = normalizeStudio(result);
+  } catch {
+    try { const fallback = localStorage.getItem('artdossier-studio-data'); if (fallback) local = normalizeStudio(JSON.parse(fallback)); } catch { /* vacío */ }
+  }
+  if (!cloud.studioDoc) return local;
+  try {
+    const snapshot = await cloud.studioDoc.get();
+    if (snapshot.exists) {
+      const remote = normalizeStudio(snapshot.data());
+      if (!local.updatedAt || remote.updatedAt >= local.updatedAt) return remote;
+    }
+  } catch { /* se usa la copia local */ }
+  return local;
+}
+
+function scheduleStudioSave() {
+  clearTimeout(studioTimer);
+  studioTimer = window.setTimeout(() => { studioTimer = 0; saveStudio(); }, 600);
+}
+
+function flushStudioSave() {
+  if (!studioTimer) return;
+  clearTimeout(studioTimer); studioTimer = 0; saveStudio();
+}
+
+function saveStudio() {
+  studioChain = studioChain.then(async () => {
+    studioData.updatedAt = new Date().toISOString();
+    if (cloud.studioDoc) { try { await cloud.studioDoc.set(JSON.parse(JSON.stringify(studioData))); } catch { showToast('No se pudo guardar en tu espacio privado; quedó en este navegador.'); } }
+    try {
+      const db = await openDatabase();
+      await new Promise((resolve, reject) => { const request = db.transaction(STORE_NAME, 'readwrite').objectStore(STORE_NAME).put(studioData); request.onsuccess = () => resolve(); request.onerror = () => reject(request.error); });
+      db.close();
+    } catch {
+      try { localStorage.setItem('artdossier-studio-data', JSON.stringify(studioData)); } catch { if (!cloud.studioDoc) showToast('No se pudo guardar. Exporta un respaldo JSON.'); }
+    }
+  }).catch(() => {});
+  return studioChain;
+}
+
+function daysUntil(date) {
+  if (!date) return null;
+  const [y, m, d] = date.split('-').map(Number);
+  const now = new Date();
+  return Math.round((Date.UTC(y, m - 1, d) - Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())) / 86400000);
+}
+
+function formatDate(date) {
+  if (!date) return '';
+  const [y, m, d] = date.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('es', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function todayIso() {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+}
+
+function isOpportunityActive(opp) {
+  if (['aceptada', 'rechazada', 'archivada'].includes(opp.status)) return false;
+  const days = daysUntil(opp.deadline);
+  return days === null || days >= 0 || ['enviada', 'respuesta'].includes(opp.status);
+}
+
+function opportunityPills(opp) {
+  const pills = [];
+  const days = daysUntil(opp.deadline);
+  if (days !== null) {
+    if (days < 0) pills.push(['CERRADA', '']);
+    else if (days === 0) pills.push(['CIERRA HOY', 'urgent']);
+    else if (days <= 7) pills.push([`FALTAN ${days} DÍA${days === 1 ? '' : 'S'}`, 'urgent']);
+    else pills.push([`CIERRA ${formatDate(opp.deadline).toLocaleUpperCase('es')}`, '']);
+  } else pills.push(['SIN FECHA DE CIERRE', 'warn']);
+  pills.push(opp.verifiedAt ? ['BASES VERIFICADAS', 'ok'] : ['POR VERIFICAR', 'warn']);
+  const status = OPP_STATUSES.find(([id]) => id === opp.status)[1];
+  pills.push([status.toLocaleUpperCase('es'), ['enviada', 'respuesta', 'aceptada'].includes(opp.status) ? 'done' : '']);
+  return pills;
+}
+
+const openItems = new Set();
+
+function makeField(labelText, value, { textarea = false, rows = 3, type = 'text', maxLength = 300, placeholder = '', wide = false, onInput }) {
+  const label = make('label', `field${wide ? ' wide' : ''}`);
+  label.append(make('span', '', labelText));
+  const control = textarea ? make('textarea') : make('input');
+  if (textarea) control.rows = rows; else control.type = type;
+  control.value = value || ''; control.maxLength = maxLength; control.placeholder = placeholder;
+  control.addEventListener('input', () => onInput(text(control.value, maxLength)));
+  label.append(control);
+  return label;
+}
+
+function renderOpportunities() {
+  const list = $('#opportunityList');
+  const filter = $('#opportunityFilter').value;
+  const items = studioData.opportunities
+    .filter((opp) => (filter === 'todas' ? true : filter === 'activas' ? isOpportunityActive(opp) : !isOpportunityActive(opp)))
+    .sort((a, b) => (a.deadline || '9999').localeCompare(b.deadline || '9999'));
+  list.replaceChildren();
+  $('#opportunityEmpty').hidden = items.length > 0;
+  setText('#opportunityEmpty h3', studioData.opportunities.length ? 'Nada en esta vista' : 'Aún no registras convocatorias');
+  items.forEach((opp) => {
+    const card = make('details', 'item');
+    card.open = openItems.has(opp.id);
+    card.addEventListener('toggle', () => { if (card.open) openItems.add(opp.id); else openItems.delete(opp.id); });
+    const summary = make('summary');
+    const refreshSummary = () => {
+      const done = opp.checklist.filter((entry) => entry.done).length;
+      const pills = make('span', 'pills');
+      opportunityPills(opp).forEach(([label, kind]) => pills.append(make('span', `pill ${kind}`, label)));
+      summary.replaceChildren(make('strong', '', opp.name || 'Convocatoria sin nombre'), pills,
+        make('small', '', [opp.organization, opp.place, opp.checklist.length ? `${done}/${opp.checklist.length} entregables` : 'Sin entregables', opp.verifiedAt ? `bases revisadas el ${formatDate(opp.verifiedAt)}` : ''].filter(Boolean).join(' · ')));
+    };
+    refreshSummary();
+    const changed = () => { refreshSummary(); scheduleStudioSave(); renderPanelMeta(); };
+    const body = make('div', 'item-body');
+    const grid = make('div', 'p-grid-2');
+    grid.append(
+      makeField('Nombre de la convocatoria', opp.name, { maxLength: 200, placeholder: 'Ej. Fondo de creación 2027', onInput: (v) => { opp.name = v; changed(); } }),
+      makeField('Institución u organización', opp.organization, { maxLength: 200, onInput: (v) => { opp.organization = v; changed(); } }),
+      makeField('Enlace a las bases oficiales', opp.url, { type: 'url', maxLength: 500, placeholder: 'https://…', onInput: (v) => { opp.url = v; renderLink(); scheduleStudioSave(); } }),
+      makeField('Lugar o alcance', opp.place, { maxLength: 150, placeholder: 'Ciudad, país o nacional', onInput: (v) => { opp.place = v; changed(); } }),
+      makeField('Fecha de cierre', opp.deadline, { type: 'date', maxLength: 10, onInput: (v) => { opp.deadline = safeDate(v); changed(); } }),
+      makeField('Hora y zona horaria del cierre', opp.deadlineNote, { maxLength: 120, placeholder: 'Ej. 23:59, hora de Chile', onInput: (v) => { opp.deadlineNote = v; scheduleStudioSave(); } }),
+      makeField('Elegibilidad', opp.eligibility, { textarea: true, wide: true, maxLength: 2000, placeholder: 'Quién puede postular: edad, residencia, disciplina, trayectoria', onInput: (v) => { opp.eligibility = v; scheduleStudioSave(); } }),
+      makeField('Archivos: formatos, tamaños, idioma y nombres', opp.files, { textarea: true, wide: true, maxLength: 2000, placeholder: 'Ej. PDF de máximo 10 MB, en español, nombrado APELLIDO_dossier.pdf', onInput: (v) => { opp.files = v; scheduleStudioSave(); } }),
+      makeField('Costos, comisiones, seguros, transporte o derechos de imagen', opp.costs, { textarea: true, wide: true, maxLength: 1500, placeholder: 'Solo lo que indiquen las bases', onInput: (v) => { opp.costs = v; scheduleStudioSave(); } })
+    );
+    const link = make('p', 'p-sub');
+    const renderLink = () => {
+      link.replaceChildren();
+      if (/^https?:\/\/\S+$/i.test(opp.url)) { const a = make('a', '', 'Abrir bases oficiales ↗'); a.href = opp.url; a.target = '_blank'; a.rel = 'noopener noreferrer'; link.append(a); }
+    };
+    renderLink();
+
+    const statusLabel = make('label', 'field');
+    statusLabel.append(make('span', '', 'Estado'));
+    const status = make('select');
+    OPP_STATUSES.forEach(([id, label]) => { const option = make('option', '', label); option.value = id; status.append(option); });
+    status.value = opp.status;
+    status.addEventListener('change', () => { opp.status = status.value; changed(); });
+    statusLabel.append(status);
+
+    const verify = make('button', 'button ghost small', opp.verifiedAt ? 'Volver a marcar verificada hoy' : 'Marcar bases verificadas hoy');
+    verify.type = 'button';
+    verify.addEventListener('click', () => { opp.verifiedAt = todayIso(); verify.textContent = 'Volver a marcar verificada hoy'; changed(); showToast('Bases marcadas como verificadas hoy.'); });
+
+    const checklistTitle = make('strong', '', 'Entregables');
+    const checklist = make('ul', 'checklist');
+    const renderChecklist = () => {
+      checklist.replaceChildren();
+      opp.checklist.forEach((entry) => {
+        const row = make('li', entry.done ? 'is-done' : '');
+        const box = make('input'); box.type = 'checkbox'; box.checked = entry.done; box.setAttribute('aria-label', entry.text);
+        box.addEventListener('change', () => { entry.done = box.checked; row.classList.toggle('is-done', entry.done); changed(); });
+        const remove = make('button', '', '×'); remove.type = 'button'; remove.setAttribute('aria-label', `Quitar ${entry.text}`);
+        remove.addEventListener('click', () => { opp.checklist = opp.checklist.filter((item) => item !== entry); renderChecklist(); changed(); });
+        row.append(box, make('span', '', entry.text), remove);
+        checklist.append(row);
+      });
+      if (!opp.checklist.length) checklist.append(make('li', 'cv-empty', 'Copia aquí cada documento que pidan las bases.'));
+    };
+    renderChecklist();
+    const add = make('div', 'inline-add');
+    const addInput = make('input'); addInput.type = 'text'; addInput.maxLength = 300; addInput.placeholder = 'Nuevo entregable según las bases';
+    const addButton = make('button', 'button ghost small', 'Añadir'); addButton.type = 'button';
+    const addEntry = () => { const value = text(addInput.value, 300).trim(); if (!value) return; opp.checklist.push({ id: uid('req'), text: value, done: false }); addInput.value = ''; renderChecklist(); changed(); };
+    addButton.addEventListener('click', addEntry);
+    addInput.addEventListener('keydown', (event) => { if (event.key === 'Enter') { event.preventDefault(); addEntry(); } });
+    add.append(addInput, addButton);
+    const suggest = make('button', 'text-button', 'Añadir entregables frecuentes (luego quita los que las bases no pidan)'); suggest.type = 'button';
+    suggest.addEventListener('click', () => {
+      const existing = new Set(opp.checklist.map((entry) => entry.text));
+      OPP_SUGGESTED.filter((item) => !existing.has(item)).forEach((item) => opp.checklist.push({ id: uid('req'), text: item, done: false }));
+      renderChecklist(); changed();
+    });
+
+    const notes = makeField('Notas', opp.notes, { textarea: true, maxLength: 3000, placeholder: 'Contactos, dudas a consultar, ideas para adaptar el dossier', onInput: (v) => { opp.notes = v; scheduleStudioSave(); } });
+    const actions = make('div', 'row-actions');
+    const email = make('button', 'button ghost small', 'Redactar correo'); email.type = 'button';
+    email.addEventListener('click', () => { $('#emailPlace').value = opp.organization || opp.name; buildEmail(); $('#emailTool').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+    const dossier = make('a', 'button ghost small', 'Preparar mi dossier'); dossier.href = '#configurar';
+    const remove = make('button', 'button danger small', 'Eliminar'); remove.type = 'button';
+    remove.addEventListener('click', async () => {
+      if (!(await askConfirm(`¿Eliminar «${opp.name || 'esta convocatoria'}»? Se perderán su checklist y sus notas.`, 'Eliminar'))) return;
+      studioData.opportunities = studioData.opportunities.filter((item) => item !== opp);
+      renderOpportunities(); scheduleStudioSave(); renderPanelMeta();
+    });
+    actions.append(email, dossier, remove);
+    body.append(grid, link, statusLabel, verify, checklistTitle, checklist, add, suggest, notes, actions);
+    card.append(summary, body);
+    list.append(card);
+  });
+}
+
+function addOpportunity() {
+  const opp = normalizeStudio({ opportunities: [{}] }).opportunities[0];
+  studioData.opportunities.push(opp);
+  openItems.add(opp.id);
+  $('#opportunityFilter').value = 'todas';
+  renderOpportunities(); scheduleStudioSave(); renderPanelMeta();
+  $(`#opportunityList details:last-of-type input`)?.focus();
+}
+
+function firstSentence(value) {
+  const clean = text(value).replace(/\s+/g, ' ').trim();
+  const match = clean.match(/^(.{20,320}?[.!?])(\s|$)/);
+  return match ? match[1] : clean.slice(0, 280);
+}
+
+function buildEmail() {
+  const p = state.profile;
+  const to = $('#emailTo').value.trim();
+  const place = $('#emailPlace').value.trim();
+  const why = $('#emailWhy').value.trim().replace(/\.$/, '');
+  const ask = $('#emailAsk').value.trim().replace(/\.$/, '');
+  const link = $('#emailLink').value.trim() || state.contact.website;
+  const name = p.artistName || '[tu nombre]';
+  const lines = [
+    `Asunto: ${ask ? 'Propuesta' : 'Presentación'} · ${name}${p.dossierTitle ? ` · ${p.dossierTitle}` : ''}`,
+    '',
+    `Hola${to ? `, ${to}` : ''}:`,
+    '',
+    `Mi nombre es ${name}${p.professionalTitle ? `, ${p.professionalTitle.toLocaleLowerCase('es')}` : ''}${p.city ? ` con base en ${p.city}` : ''}. Les escribo porque ${why || `[cuenta qué del programa de ${place || 'este espacio'} se relaciona con tu obra]`}.`,
+    '',
+    p.statement ? firstSentence(p.statement) : '[Resume en una o dos frases qué investiga tu obra.]',
+    '',
+    ask ? `Me gustaría ${ask}.` : '[Indica qué propones: presentar una serie, una conversación breve, una visita al taller.]',
+    '',
+    link ? `Pueden revisar mi ${findDocType(state.documentType).label.toLocaleLowerCase('es')} aquí: ${link}` : `Adjunto mi ${findDocType(state.documentType).label.toLocaleLowerCase('es')} en PDF.`,
+    '',
+    'Quedo a disposición para conversar.',
+    '',
+    'Saludos cordiales,',
+    name,
+    ...[state.contact.email, state.contact.phone, state.contact.instagram].filter(Boolean)
+  ];
+  $('#emailOutput').value = lines.join('\n');
+}
+
+async function copyEmail() {
+  const output = $('#emailOutput');
+  if (!output.value) buildEmail();
+  try { await navigator.clipboard.writeText(output.value); showToast('Correo copiado.'); }
+  catch { output.focus(); output.select(); showToast('Texto seleccionado: cópialo con Ctrl+C o Cmd+C.'); }
+}
+
+function workOptions() {
+  const select = $('#certFromWork');
+  const current = select.value;
+  select.replaceChildren(make('option', '', 'En blanco'));
+  select.firstChild.value = '';
+  state.works.filter((work) => work.title).forEach((work) => { const option = make('option', '', `${work.title}${work.year ? ` (${work.year})` : ''}`); option.value = work.id; select.append(option); });
+  if ([...select.options].some((option) => option.value === current)) select.value = current;
+}
+
+function addCertificate() {
+  const work = state.works.find((item) => item.id === $('#certFromWork').value);
+  studioData.certificateSeq += 1;
+  const cert = normalizeStudio({ certificates: [{
+    number: `CA-${year}-${String(studioData.certificateSeq).padStart(3, '0')}`, workId: work?.id || '', artist: state.profile.artistName,
+    title: work?.title, year: work?.year, medium: work?.medium, dimensions: work?.dimensions, edition: work?.edition,
+    issuedOn: todayIso(), place: state.profile.city
+  }] }).certificates[0];
+  studioData.certificates.unshift(cert);
+  openItems.add(cert.id);
+  renderCertificates(); scheduleStudioSave(); renderPanelMeta();
+}
+
+function renderCertificates() {
+  workOptions();
+  const list = $('#certificateList');
+  list.replaceChildren();
+  $('#certificateEmpty').hidden = studioData.certificates.length > 0;
+  studioData.certificates.forEach((cert) => {
+    const card = make('details', 'item');
+    card.open = openItems.has(cert.id);
+    card.addEventListener('toggle', () => { if (card.open) openItems.add(cert.id); else openItems.delete(cert.id); });
+    const summary = make('summary');
+    const refresh = () => {
+      const pills = make('span', 'pills');
+      pills.append(make('span', 'pill', cert.number || 'SIN NÚMERO'));
+      summary.replaceChildren(make('strong', '', cert.title || 'Obra sin título'), pills, make('small', '', [cert.artist, cert.year, cert.issuedOn && `emitido el ${formatDate(cert.issuedOn)}`].filter(Boolean).join(' · ')));
+    };
+    refresh();
+    const changed = () => { refresh(); scheduleStudioSave(); };
+    const grid = make('div', 'p-grid-2');
+    const field = (label, key, options = {}) => makeField(label, cert[key], { maxLength: 300, ...options, onInput: (v) => { cert[key] = options.type === 'date' ? safeDate(v) : v; changed(); } });
+    grid.append(
+      field('Número de certificado', 'number', { maxLength: 40 }),
+      field('Artista', 'artist', { maxLength: 150 }),
+      field('Título de la obra', 'title', { maxLength: 200, wide: true }),
+      field('Año', 'year', { maxLength: 20 }),
+      field('Dimensiones', 'dimensions', { maxLength: 120 }),
+      field('Técnica y materiales', 'medium', { wide: true }),
+      field('Edición', 'edition', { maxLength: 100, placeholder: 'Ej. 5 + 2 P.A. o pieza única' }),
+      field('Ejemplar', 'copy', { maxLength: 60, placeholder: 'Ej. 3/5' }),
+      field('Fecha de emisión', 'issuedOn', { type: 'date', maxLength: 10 }),
+      field('Lugar de emisión', 'place', { maxLength: 150 }),
+      field('Entregada a (opcional)', 'holder', { maxLength: 200, placeholder: 'Nombre de quien adquiere la obra' }),
+      field('Notas para el certificado', 'notes', { textarea: true, wide: true, maxLength: 1500, placeholder: 'Ej. firmada al reverso; incluye marco original' })
+    );
+    const holder = make('label', 'check-field');
+    const holderBox = make('input'); holderBox.type = 'checkbox'; holderBox.checked = cert.includeHolder;
+    holderBox.addEventListener('change', () => { cert.includeHolder = holderBox.checked; changed(); });
+    holder.append(holderBox, document.createTextNode('Incluir el nombre de quien la recibe en el certificado'));
+    const actions = make('div', 'row-actions');
+    const preview = make('button', 'button primary small', 'Vista previa'); preview.type = 'button';
+    preview.addEventListener('click', () => { flushStudioSave(); openDocumentPreview({ title: `Certificado ${cert.number}`, fill: (container) => renderCertificate(cert, container), stem: `${fileStem(cert.title || 'obra')}-certificado` }); });
+    const remove = make('button', 'button danger small', 'Eliminar'); remove.type = 'button';
+    remove.addEventListener('click', async () => {
+      if (!(await askConfirm(`¿Eliminar el certificado ${cert.number}? Si ya lo entregaste, conserva una copia en PDF.`, 'Eliminar'))) return;
+      studioData.certificates = studioData.certificates.filter((item) => item !== cert);
+      renderCertificates(); scheduleStudioSave(); renderPanelMeta();
+    });
+    actions.append(preview, remove);
+    const body = make('div', 'item-body');
+    body.append(grid, holder, actions);
+    card.append(summary, body);
+    list.append(card);
+  });
+}
+
+// Certificado original: sin membretes, sellos ni firmas de terceros. Se firma a mano después de imprimirlo.
+function renderCertificate(cert, container) {
+  container.replaceChildren();
+  const page = make('section', 'doc-page certificate');
+  const head = make('div', 'cert-head');
+  head.append(make('span', '', cert.artist || 'Artista'), make('span', '', `N.º ${cert.number || '—'}`));
+  page.append(head, make('h1', '', 'Certificado de autenticidad'));
+  const work = state.works.find((item) => item.id === cert.workId);
+  const body = make('div', `cert-body${work?.image ? '' : ' no-image'}`);
+  const data = make('dl');
+  [['Artista', cert.artist], ['Obra', cert.title || 'Sin título'], ['Año', cert.year], ['Técnica', cert.medium], ['Dimensiones', cert.dimensions], ['Edición', cert.edition], ['Ejemplar', cert.copy], ['Identificador', cert.number], cert.includeHolder && cert.holder ? ['Entregada a', cert.holder] : null]
+    .filter((row) => row && row[1]).forEach(([term, value]) => data.append(make('dt', '', term), make('dd', '', value)));
+  body.append(data);
+  if (work?.image) { const image = make('img', 'cert-image'); image.src = imageSrc(work.image); image.alt = cert.title || 'Obra'; body.append(image); }
+  page.append(body);
+  page.append(make('p', 'cert-statement', `Yo, ${cert.artist || '[nombre de la persona artista]'}, declaro que la obra descrita en este documento es original y de mi autoría${cert.edition || cert.copy ? ', y que corresponde a la edición y el ejemplar indicados' : ''}.`));
+  if (cert.notes) page.append(make('p', 'cert-statement', cert.notes));
+  const sign = make('div', 'cert-sign');
+  const signature = make('div'); signature.append(make('div', '', ' '), make('span', '', 'Firma de la persona artista'));
+  const when = make('div'); when.append(make('div', '', [cert.place, formatDate(cert.issuedOn)].filter(Boolean).join(', ') || ' '), make('span', '', 'Lugar y fecha'));
+  sign.append(signature, when);
+  page.append(sign, make('p', 'cert-foot', 'Este certificado es válido solo con la firma manuscrita de la persona artista. Conserva una copia junto a la documentación de la obra.'));
+  container.append(page);
+}
+
+function renderPanelMeta() {
+  const active = studioData.opportunities.filter(isOpportunityActive);
+  const upcoming = active.map((opp) => daysUntil(opp.deadline)).filter((days) => days !== null && days >= 0).sort((a, b) => a - b);
+  setText('#pOppMeta', active.length ? `${active.length} activa${active.length === 1 ? '' : 's'}${upcoming.length ? ` · la próxima cierra ${upcoming[0] === 0 ? 'hoy' : `en ${upcoming[0]} día${upcoming[0] === 1 ? '' : 's'}`}` : ''}` : 'Sin convocatorias activas');
+  const count = studioData.certificates.length;
+  setText('#pCertMeta', count ? `${count} certificado${count === 1 ? '' : 's'} emitido${count === 1 ? '' : 's'}` : 'Sin certificados');
+}
+
 let saveChain = Promise.resolve();
 
 function saveProject(options) {
@@ -1049,11 +1647,16 @@ function onHashChange() {
 function route(name) {
   const target = name || 'inicio';
   lastRoute = target;
-  if (target === 'inicio') {
+  if (['inicio', 'convocatorias', 'estudio'].includes(target)) {
     if (!$('#previewModal').hidden) closePreview({ keepHash: true });
-    document.body.dataset.view = 'inicio';
-    setText('#brandSub', 'PANEL DEL ESTUDIO');
-    renderPanel();
+    document.body.dataset.view = target;
+    setText('#brandSub', { inicio: 'PANEL DEL ESTUDIO', convocatorias: 'CONVOCATORIAS', estudio: 'MI ESTUDIO ARTÍSTICO' }[target]);
+    $$('.p-section').forEach((section) => { section.hidden = section.dataset.section !== target; });
+    $$('[data-section-link]').forEach((link) => { if (link.dataset.sectionLink === target) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current'); });
+    if (target === 'inicio') renderPanel();
+    if (target === 'convocatorias') renderOpportunities();
+    if (target === 'estudio') renderCertificates();
+    renderPanelMeta();
     window.scrollTo({ top: 0 });
     return;
   }
@@ -1089,7 +1692,7 @@ function renderPanel() {
   setText('#greeting', profile.artistName ? `Hola, ${profile.artistName}.` : 'Tu estudio, en un solo lugar.');
   if (!started) return;
   const discipline = state.customDiscipline || findDiscipline(state.discipline).label;
-  setText('#pDiscipline', discipline.toLocaleUpperCase('es'));
+  setText('#pDiscipline', `${findDocType(state.documentType).label} · ${discipline}`.toLocaleUpperCase('es'));
   setText('#pTitle', profile.dossierTitle || 'Dossier sin título');
   const saved = state.updatedAt ? relativeDate(state.updatedAt) : '';
   setText('#pSaved', [profile.artistName, saved && `guardado ${saved}`].filter(Boolean).join(' · '));
@@ -1200,6 +1803,57 @@ function renderTemplateGrid() {
   });
 }
 
+function renderDocTypeGrid() {
+  const grid = $('#docTypeGrid');
+  grid.replaceChildren();
+  DOC_TYPES.forEach((item) => {
+    const button = make('button', `choice-card${state.documentType === item.id ? ' selected' : ''}`);
+    button.type = 'button';
+    button.setAttribute('aria-pressed', String(state.documentType === item.id));
+    button.append(make('span', 'choice-icon', item.icon), make('strong', '', item.label), make('small', '', item.short));
+    button.addEventListener('click', () => { state.documentType = item.id; renderConfiguration(); applyDocType(); renderWorks(); updateMiniPreview(); scheduleSave(); });
+    grid.append(button);
+  });
+}
+
+// Muestra los campos y pestañas propios de cada tipo de documento y renumera la navegación.
+function applyDocType() {
+  $$('[data-doc-type]').forEach((element) => { element.hidden = element.dataset.docType !== state.documentType; });
+  const proposalTab = $('.nav-button[data-tab="propuesta"]');
+  proposalTab.hidden = state.documentType !== 'propuesta';
+  if (proposalTab.hidden && currentTab === 'propuesta') switchTab('configurar');
+  $$('.nav-button').filter((button) => !button.hidden).forEach((button, index) => { button.querySelector('span').textContent = String(index + 1).padStart(2, '0'); });
+}
+
+function getPath(object, path) {
+  return path.split('.').reduce((value, key) => (value == null ? value : value[key]), object);
+}
+
+function setPath(object, path, value) {
+  const keys = path.split('.');
+  const last = keys.pop();
+  keys.reduce((value, key) => value[key], object)[last] = value;
+}
+
+function bindDataFields() {
+  $$('[data-bind]').forEach((element) => {
+    element.addEventListener(element.type === 'checkbox' ? 'change' : 'input', () => {
+      const value = element.type === 'checkbox' ? element.checked : text(element.value, Number(element.maxLength) > 0 ? Number(element.maxLength) : 3000);
+      setPath(state, element.dataset.bind, value);
+      if (element.dataset.bind === 'showPrices') renderWorks();
+      scheduleSave();
+    });
+  });
+}
+
+function hydrateDataFields() {
+  $$('[data-bind]').forEach((element) => {
+    const value = getPath(state, element.dataset.bind);
+    if (element.type === 'checkbox') element.checked = Boolean(value);
+    else element.value = value || '';
+  });
+}
+
 function renderGuide() {
   const discipline = findDiscipline(state.discipline);
   const purpose = findPurpose(state.purpose);
@@ -1209,12 +1863,16 @@ function renderGuide() {
   const checklist = $('#guideChecklist');
   focus.replaceChildren(...discipline.focus.map((item) => make('li', '', item)), make('li', '', purpose.guidance));
   checklist.replaceChildren(...discipline.checklist.map((item) => make('li', '', item)));
+  const docType = findDocType(state.documentType);
+  setText('#structureTitle', `Estructura de un ${docType.label.toLocaleLowerCase('es')}`);
+  $('#guideStructure').replaceChildren(...docType.structure.map((item) => make('li', '', item)), make('li', '', docType.tip));
   const example = $('#guideExample');
   example.replaceChildren(make('strong', '', 'EJEMPLO FICTICIO · NO SE COPIA AL DOSSIER'), make('p', '', discipline.example.title), make('p', '', discipline.example.body));
 }
 
 function renderConfiguration() {
   renderDisciplineGrid($('#disciplineSearch')?.value || '');
+  renderDocTypeGrid();
   renderPurposeGrid();
   renderTemplateGrid();
   setText('#recommendation', getRecommendation(state.discipline, state.purpose, state.customDiscipline));
@@ -1363,7 +2021,7 @@ function createInputField(labelText, value, options = {}) {
 }
 
 function addWork() {
-  state.works.push({ id: uid('work'), title: '', year: '', medium: '', dimensions: '', edition: '', description: '', image: '' });
+  state.works.push({ id: uid('work'), title: '', year: '', medium: '', dimensions: '', edition: '', description: '', image: '', availability: '', price: '' });
   renderWorks();
   scheduleSave();
 }
@@ -1410,6 +2068,17 @@ function renderWorks() {
       const field = createInputField(label, work[key], { ...options, onInput: (value) => { work[key] = value; scheduleSave(); } });
       fields.append(field.label);
     });
+    if (state.documentType === 'portafolio') {
+      const availability = make('label', 'field');
+      availability.append(make('span', '', 'Disponibilidad'));
+      const select = make('select');
+      AVAILABILITY.forEach((option) => { const item = make('option', '', option || 'Sin indicar'); item.value = option; select.append(item); });
+      select.value = work.availability || '';
+      select.addEventListener('change', () => { work.availability = select.value; scheduleSave(); });
+      availability.append(select);
+      const price = createInputField(state.showPrices ? 'Precio' : 'Precio (no se muestra en el PDF)', work.price, { maxLength: 60, placeholder: 'Ej. CLP 450.000', onInput: (value) => { work.price = value; scheduleSave(); } });
+      fields.append(availability, price.label);
+    }
     const imageLabel = make('label', 'upload-field compact work-image');
     const imageInput = make('input'); imageInput.type = 'file'; imageInput.accept = 'image/jpeg,image/png,image/webp'; imageInput.hidden = true;
     imageLabel.append(imageInput, make('span', 'upload-icon', '＋'), make('strong', '', 'Imagen de la obra'), make('span', '', 'JPG, PNG o WEBP · máximo 20 MB'));
@@ -1470,63 +2139,103 @@ function appendTextBlock(parent, heading, body) {
 function renderDocumentPages(container) {
   container.replaceChildren();
   const templateClass = `template-${findTemplate(state.template).id}`;
+  const docType = findDocType(state.documentType);
   const discipline = state.customDiscipline || findDiscipline(state.discipline).label;
   const purpose = findPurpose(state.purpose).label;
   const newPage = (label) => { const page = make('section', `doc-page ${templateClass}`); page.append(make('p', 'page-label', label)); container.append(page); return page; };
+  const works = state.works.filter((work) => work.title || work.image || work.medium);
 
-  const cover = newPage(`${discipline} · ${year}`);
-  cover.append(make('h1', '', state.profile.dossierTitle || 'Dossier artístico'));
-  const coverByline = state.profile.artistName ? make('p', '', state.profile.artistName) : make('p', 'missing', 'Falta tu nombre (no se imprimirá este aviso)');
-  if (state.profile.professionalTitle) coverByline.append(document.createTextNode(` · ${state.profile.professionalTitle}`));
-  cover.append(coverByline);
-  if (state.profile.coverImage) { const image = make('img', 'cover-image'); image.src = imageSrc(state.profile.coverImage); image.alt = ''; cover.append(image); }
-  const bottom = make('div', 'cover-bottom'); bottom.append(make('span', '', state.profile.city), make('span', '', purpose)); cover.append(bottom);
+  const sections = {
+    cover() {
+      const cover = newPage(`${docType.label} · ${discipline} · ${year}`);
+      const title = state.profile.dossierTitle || (docType.id === 'propuesta' && state.proposal.title) || docType.fallbackTitle;
+      cover.append(make('h1', '', title));
+      const coverByline = state.profile.artistName ? make('p', '', state.profile.artistName) : make('p', 'missing', 'Falta tu nombre (no se imprimirá este aviso)');
+      if (state.profile.professionalTitle) coverByline.append(document.createTextNode(` · ${state.profile.professionalTitle}`));
+      cover.append(coverByline);
+      if (state.profile.coverImage) { const image = make('img', 'cover-image'); image.src = imageSrc(state.profile.coverImage); image.alt = ''; cover.append(image); }
+      const bottom = make('div', 'cover-bottom'); bottom.append(make('span', '', state.profile.city), make('span', '', purpose)); cover.append(bottom);
+    },
+    proposal() {
+      const proposal = state.proposal;
+      const blocks = [['Idea o concepto', proposal.concept], ['Objetivos', proposal.objectives], ['Espacio y montaje', proposal.technical], ['Cronograma', proposal.schedule], ['Presupuesto', proposal.budget]].filter(([, body]) => body);
+      if (!blocks.length && !proposal.title) return;
+      const page = newPage('Propuesta');
+      page.append(make('h2', '', proposal.title || 'Propuesta'));
+      blocks.forEach(([heading, body]) => { const block = make('div', 'cv-block'); block.append(make('h3', '', heading), make('p', '', body)); page.append(block); });
+    },
+    statement() {
+      if (state.profile.statement) appendTextBlock(newPage(docType.id === 'catalogo' ? 'Presentación' : 'Statement'), docType.id === 'catalogo' ? 'Presentación' : 'Statement', state.profile.statement);
+    },
+    curatorial() {
+      if (!state.curatorial.text) return;
+      const page = newPage('Texto curatorial');
+      appendTextBlock(page, 'Texto curatorial', state.curatorial.text);
+      if (state.curatorial.author) page.append(make('p', '', `— ${state.curatorial.author}`));
+    },
+    services() {
+      if (state.services) appendTextBlock(newPage('Servicios'), 'Servicios y especialidad', state.services);
+    },
+    bio() {
+      if (!state.profile.bio && !state.profile.portraitImage) return;
+      const bioPage = newPage('Biografía');
+      appendTextBlock(bioPage, 'Biografía', state.profile.bio);
+      if (state.profile.portraitImage) { const portrait = make('img', 'portrait-image'); portrait.src = imageSrc(state.profile.portraitImage); portrait.alt = `Retrato de ${state.profile.artistName || 'la persona artista'}`; bioPage.append(portrait); }
+    },
+    works() {
+      const label = docType.id === 'propuesta' ? 'Obra de referencia' : docType.id === 'portafolio' ? 'Proyecto' : 'Obra';
+      works.forEach((work, index) => {
+        const page = newPage(`${label} ${String(index + 1).padStart(2, '0')}`);
+        if (work.image) { const image = make('img', 'work-page-image'); image.src = imageSrc(work.image); image.alt = work.title || `Obra ${index + 1}`; page.append(image); }
+        const meta = make('div', 'work-meta');
+        const main = make('div'); main.append(make('h2', '', work.title || 'Sin título'));
+        if (work.medium) main.append(make('p', '', work.medium));
+        if (work.dimensions) main.append(make('p', '', work.dimensions));
+        const side = make('div');
+        if (work.year) side.append(make('p', '', work.year));
+        if (work.edition) side.append(make('p', '', `Edición: ${work.edition}`));
+        if (docType.id === 'portafolio' && work.availability) side.append(make('p', '', work.availability));
+        if (docType.id === 'portafolio' && state.showPrices && work.price) side.append(make('p', '', work.price));
+        meta.append(main, side);
+        if (work.description) meta.append(make('p', 'work-description', work.description));
+        page.append(meta);
+      });
+    },
+    cv() {
+      const cvGroups = CV_SECTIONS.map((section) => ({ ...section, entries: state.cv[section.id].filter((entry) => entry.year || entry.description) })).filter((section) => section.entries.length);
+      if (!cvGroups.length) return;
+      const page = newPage('Currículum seleccionado');
+      page.append(make('h2', '', 'Trayectoria'));
+      cvGroups.forEach((section) => {
+        const block = make('div', 'cv-block'); block.append(make('h3', '', section.label));
+        section.entries.forEach((entry) => { const row = make('div', 'cv-entry'); row.append(make('span', '', entry.year), make('span', '', entry.description)); block.append(row); });
+        page.append(block);
+      });
+    },
+    contact() {
+      const contacts = [['Email', state.contact.email], ['Teléfono', state.contact.phone], ['Web', state.contact.website], ['Instagram', state.contact.instagram], ['Galería', state.contact.gallery], ['Estudio', state.contact.studio]].filter(([, value]) => value);
+      const credits = docType.id === 'catalogo' ? state.credits : '';
+      if (!contacts.length && !credits) return;
+      const page = newPage(credits ? 'Contacto y créditos' : 'Contacto'); page.append(make('h2', '', state.profile.artistName || 'Contacto'));
+      if (contacts.length) { const list = make('div', 'contact-list'); contacts.forEach(([label, value]) => list.append(make('div', '', `${label}: ${value}`))); page.append(list); }
+      if (credits) { const block = make('div', 'cv-block'); block.append(make('h3', '', 'Créditos'), make('p', '', credits)); page.append(block); }
+    }
+  };
 
-  if (state.profile.statement) appendTextBlock(newPage('Statement'), 'Statement', state.profile.statement);
-  if (state.profile.bio || state.profile.portraitImage) {
-    const bioPage = newPage('Biografía');
-    appendTextBlock(bioPage, 'Biografía', state.profile.bio);
-    if (state.profile.portraitImage) { const portrait = make('img', 'portrait-image'); portrait.src = imageSrc(state.profile.portraitImage); portrait.alt = `Retrato de ${state.profile.artistName || 'la persona artista'}`; bioPage.append(portrait); }
-  }
-
-  state.works.filter((work) => work.title || work.image || work.medium).forEach((work, index) => {
-    const page = newPage(`Obra ${String(index + 1).padStart(2, '0')}`);
-    if (work.image) { const image = make('img', 'work-page-image'); image.src = imageSrc(work.image); image.alt = work.title || `Obra ${index + 1}`; page.append(image); }
-    const meta = make('div', 'work-meta');
-    const main = make('div'); main.append(make('h2', '', work.title || 'Sin título'));
-    if (work.medium) main.append(make('p', '', work.medium));
-    if (work.dimensions) main.append(make('p', '', work.dimensions));
-    const side = make('div');
-    if (work.year) side.append(make('p', '', work.year));
-    if (work.edition) side.append(make('p', '', `Edición: ${work.edition}`));
-    meta.append(main, side);
-    if (work.description) meta.append(make('p', 'work-description', work.description));
-    page.append(meta);
-  });
-
-  const cvGroups = CV_SECTIONS.map((section) => ({ ...section, entries: state.cv[section.id].filter((entry) => entry.year || entry.description) })).filter((section) => section.entries.length);
-  if (cvGroups.length) {
-    const page = newPage('Currículum seleccionado');
-    page.append(make('h2', '', 'Trayectoria'));
-    cvGroups.forEach((section) => {
-      const block = make('div', 'cv-block'); block.append(make('h3', '', section.label));
-      section.entries.forEach((entry) => { const row = make('div', 'cv-entry'); row.append(make('span', '', entry.year), make('span', '', entry.description)); block.append(row); });
-      page.append(block);
-    });
-  }
-
-  const contacts = [['Email', state.contact.email], ['Teléfono', state.contact.phone], ['Web', state.contact.website], ['Instagram', state.contact.instagram], ['Galería', state.contact.gallery], ['Estudio', state.contact.studio]].filter(([, value]) => value);
-  if (contacts.length) {
-    const page = newPage('Contacto'); page.append(make('h2', '', state.profile.artistName || 'Contacto'));
-    const list = make('div', 'contact-list'); contacts.forEach(([label, value]) => list.append(make('div', '', `${label}: ${value}`))); page.append(list);
-  }
+  const order = {
+    dossier: ['cover', 'statement', 'bio', 'works', 'cv', 'contact'],
+    portafolio: ['cover', 'services', 'works', 'bio', 'cv', 'contact'],
+    catalogo: ['cover', 'statement', 'curatorial', 'works', 'bio', 'cv', 'contact'],
+    propuesta: ['cover', 'proposal', 'statement', 'works', 'bio', 'cv', 'contact']
+  }[docType.id];
+  order.forEach((name) => sections[name]());
 }
 
 function reviewProject() {
   const issues = [];
   const works = state.works.filter((work) => work.title || work.image || work.medium);
   if (!state.profile.artistName) issues.push('Falta tu nombre o firma artística (Portada).');
-  if (!state.profile.dossierTitle) issues.push('Sin título del dossier: se usará «Dossier artístico».');
+  if (!state.profile.dossierTitle) issues.push(`Sin título: se usará «${findDocType(state.documentType).fallbackTitle}».`);
   if (!state.profile.statement) issues.push('Aún no hay statement.');
   if (!works.length) issues.push('Aún no hay obras con contenido.');
   const noImage = works.filter((work) => !work.image).length;
@@ -1534,6 +2243,9 @@ function reviewProject() {
   const incomplete = works.filter((work) => !work.title || !work.year || !work.medium || !work.dimensions).length;
   if (incomplete) issues.push(`${incomplete} obra(s) con la ficha técnica incompleta (título, año, técnica o dimensiones).`);
   if (!Object.values(state.contact).some(Boolean)) issues.push('Sin datos de contacto.');
+  if (state.documentType === 'propuesta' && !state.proposal.concept) issues.push('Falta la idea o concepto de la propuesta (pestaña Propuesta).');
+  if (state.documentType === 'portafolio' && !state.services) issues.push('Sin servicios o especialidad (pestaña Biografía).');
+  if (state.documentType === 'catalogo' && state.curatorial.text && !state.curatorial.author) issues.push('El texto curatorial no indica quién lo escribió.');
   return issues;
 }
 
@@ -1548,9 +2260,23 @@ function renderReview() {
   box.append(make('strong', '', 'Revisión antes de exportar'), list);
 }
 
+let previewContext = null;
+
+function openDocumentPreview(context) {
+  lastFocus = document.activeElement;
+  previewContext = context;
+  setText('#previewTitle', context.title);
+  $('#reviewBox').hidden = true;
+  context.fill($('#previewPages'));
+  const modal = $('#previewModal'); modal.hidden = false; document.body.style.overflow = 'hidden'; $('#closePreviewButton').focus();
+}
+
 function openPreview() {
   flushSave();
   lastFocus = document.activeElement;
+  previewContext = null;
+  setText('#previewTitle', `${findDocType(state.documentType).label} completo`);
+  $('#reviewBox').hidden = false;
   renderReview();
   renderDocumentPages($('#previewPages'));
   const modal = $('#previewModal'); modal.hidden = false; document.body.style.overflow = 'hidden'; $('#closePreviewButton').focus();
@@ -1623,13 +2349,13 @@ function findBlankRow(canvas, ideal, maxSearch) {
 }
 
 // En el artefacto no se puede imprimir: el PDF se genera en la página y se ofrece como descarga.
-async function downloadPdf() {
+async function downloadPdf(fill = renderDocumentPages, stem = `${fileStem(state.profile.artistName || 'artdossier')}-${findDocType(state.documentType).id}`) {
   showToast('Preparando el PDF…');
   const area = $('#printArea');
   try {
     await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
     await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
-    renderDocumentPages(area);
+    fill(area);
     area.classList.add('pdf-render');
     await Promise.all($$('img', area).map((image) => image.decode().catch(() => {})));
     fitImagesForCanvas(area);
@@ -1665,7 +2391,7 @@ async function downloadPdf() {
         offset = end;
       }
     }
-    await cloud.downloads.save({ filename: `${fileStem(state.profile.artistName || 'artdossier')}-dossier.pdf`, data: pdf.output('blob') });
+    await cloud.downloads.save({ filename: `${stem}.pdf`, data: pdf.output('blob') });
     showToast('PDF listo.');
   } catch (error) {
     if (error?.code === 'declined') showToast('Descarga cancelada.');
@@ -1678,9 +2404,13 @@ async function downloadPdf() {
 async function printDossier() {
   if (!state.profile.artistName && !(await askConfirm('Tu dossier aún no tiene nombre de artista. ¿Quieres exportarlo de todas formas?', 'Exportar igual'))) return;
   flushSave();
-  if (cloud.downloads) return downloadPdf();
+  return exportDocument(renderDocumentPages);
+}
+
+async function exportDocument(fill, stem) {
+  if (cloud.downloads) return downloadPdf(fill, stem);
   const area = $('#printArea');
-  renderDocumentPages(area);
+  fill(area);
   // El fondo de la hoja continúa el color de la plantilla cuando un texto ocupa más de una hoja.
   document.documentElement.style.setProperty('--print-bg', getComputedStyle(area.firstElementChild).backgroundColor);
   // Esperar a que todas las imágenes estén decodificadas para que no salgan en blanco en el PDF.
@@ -1723,14 +2453,14 @@ async function exportProject() {
   if (cloud.downloads) {
     try {
       showToast('Preparando el respaldo…');
-      await cloud.downloads.save({ filename, data: exportPayload(await selfContainedProject()) });
+      await cloud.downloads.save({ filename, data: withStudio(exportPayload(await selfContainedProject())) });
       showToast('Respaldo JSON listo.');
     } catch (error) {
       showToast(error?.code === 'declined' ? 'Descarga cancelada.' : 'No se pudo preparar el respaldo.');
     }
     return;
   }
-  const payload = exportPayload(state);
+  const payload = withStudio(exportPayload(state));
   const blob = new Blob([payload], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const link = make('a'); link.href = url; link.download = filename; link.click();
@@ -1748,6 +2478,7 @@ async function importProject(file) {
     const imported = await storeProjectImages(await compressProjectImages(normalizeProject(parsed)));
     clearTimeout(saveTimer); saveTimer = 0;
     const previous = projectImages(state);
+    if (parsed.studio) { studioData = normalizeStudio(parsed.studio); await saveStudio(); }
     state = imported;
     const kept = new Set(projectImages(state));
     previous.filter((value) => !kept.has(value)).forEach(releaseImage);
@@ -1770,8 +2501,10 @@ function hydrateUI() {
   $('#coverPreview').hidden = !state.profile.coverImage; $('#removeCover').hidden = !state.profile.coverImage; if (state.profile.coverImage) $('#coverPreview').src = imageSrc(state.profile.coverImage);
   $('#portraitPreview').hidden = !state.profile.portraitImage; $('#removePortrait').hidden = !state.profile.portraitImage; if (state.profile.portraitImage) $('#portraitPreview').src = imageSrc(state.profile.portraitImage);
   setText('#statementCount', `${wordCount(state.profile.statement)} palabras`); setText('#bioCount', `${wordCount(state.profile.bio)} palabras`);
+  hydrateDataFields(); applyDocType();
   renderConfiguration(); renderWorks(); renderCV(); updateMiniPreview();
   if (document.body.dataset.view === 'inicio') renderPanel();
+  renderPanelMeta();
 }
 
 function bindEvents() {
@@ -1788,9 +2521,15 @@ function bindEvents() {
   document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !$('#previewModal').hidden && !$('#confirmDialog').open) closePreview(); trapFocus(event); });
   $('#resetButton').addEventListener('click', resetProject);
   // No perder los últimos cambios si se cierra la pestaña o se cambia de app (móvil).
-  window.addEventListener('pagehide', flushSave);
-  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushSave(); });
-  ['printButton', 'modalPrintButton'].forEach((id) => $(`#${id}`).addEventListener('click', printDossier));
+  window.addEventListener('pagehide', () => { flushSave(); flushStudioSave(); });
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { flushSave(); flushStudioSave(); } });
+  $('#printButton').addEventListener('click', printDossier);
+  $('#modalPrintButton').addEventListener('click', () => (previewContext ? exportDocument(previewContext.fill, previewContext.stem) : printDossier()));
+  $('#addOpportunity').addEventListener('click', addOpportunity);
+  $('#opportunityFilter').addEventListener('change', renderOpportunities);
+  $('#emailBuild').addEventListener('click', buildEmail);
+  $('#emailCopy').addEventListener('click', copyEmail);
+  $('#addCertificate').addEventListener('click', addCertificate);
   $('#exportButton').addEventListener('click', exportProject);
   $('#importButton').addEventListener('click', () => $('#importInput').click());
   $('#importInput').addEventListener('change', () => { const [file] = $('#importInput').files; if (file) importProject(file); $('#importInput').value = ''; });
@@ -1800,6 +2539,8 @@ async function init() {
   await connectCloud().catch(() => {});
   applyModeUI();
   state = await readStoredProject();
+  studioData = await readStudio();
+  bindDataFields();
   bindProfileFields();
   bindImageInput({ input: $('#coverInput'), drop: $('#coverDrop'), preview: $('#coverPreview'), remove: $('#removeCover'), getValue: () => state.profile.coverImage, setValue: (value) => { state.profile.coverImage = value; } });
   bindImageInput({ input: $('#portraitInput'), drop: $('#portraitDrop'), preview: $('#portraitPreview'), remove: $('#removePortrait'), getValue: () => state.profile.portraitImage, setValue: (value) => { state.profile.portraitImage = value; } });

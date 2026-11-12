@@ -7,7 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const [base, projectFile, out = '.', libs] = process.argv.slice(2);
 
-const server = { doc: null, assets: new Map(), downloads: [], deleted: 0 };
+const server = { doc: null, studio: null, assets: new Map(), downloads: [], deleted: 0 };
 
 async function preparePage(context) {
   const page = await context.newPage();
@@ -24,17 +24,18 @@ async function preparePage(context) {
   });
   await page.exposeBinding('__upload', (_, b64, type) => { const id = Math.random().toString(16).slice(2).padEnd(32, '0').slice(0, 32); server.assets.set(id, { body: Buffer.from(b64, 'base64'), type }); return id; });
   await page.exposeBinding('__deleteAsset', (_, id) => { server.deleted += server.assets.delete(id) ? 1 : 0; });
-  await page.exposeBinding('__docGet', () => server.doc);
-  await page.exposeBinding('__docSet', (_, json) => { if (json.length > 256 * 1024) throw new Error('too big'); server.doc = json; });
+  await page.exposeBinding('__docGet', (_, name) => server[name]);
+  await page.exposeBinding('__docSet', (_, name, json) => { if (json.length > 256 * 1024) throw new Error('too big'); server[name] = json; });
   await page.exposeBinding('__save', (_, filename, b64) => { const file = path.join(out, 'descarga-' + filename); fs.writeFileSync(file, Buffer.from(b64, 'base64')); server.downloads.push({ filename, bytes: Buffer.from(b64, 'base64').length, file }); });
   await page.addInitScript(() => {
     const toB64 = async (blob) => { const bytes = new Uint8Array(await blob.arrayBuffer()); let s = ''; for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode(...bytes.subarray(i, i + 0x8000)); return btoa(s); };
-    const doc = {
-      get: async () => { const json = await window.__docGet(); return { exists: Boolean(json), data: () => (json ? JSON.parse(json) : undefined) }; },
-      set: async (data) => { try { await window.__docSet(JSON.stringify(data)); } catch { throw { code: 'invalid_argument', message: 'too big' }; } }
-    };
+    const makeDoc = (name) => ({
+      get: async () => { const json = await window.__docGet(name); return { exists: Boolean(json), data: () => (json ? JSON.parse(json) : undefined) }; },
+      set: async (data) => { try { await window.__docSet(name, JSON.stringify(data)); } catch { throw { code: 'invalid_argument', message: 'too big' }; } }
+    });
+    const docs = { artdossier: makeDoc('doc'), estudio: makeDoc('studio') };
     const caps = {
-      db: Object.freeze({ collection: (p) => ({ doc: (id) => { if (!/^data\/users\/u1$/.test(p) || id !== 'artdossier') throw new Error('ruta inesperada ' + p); return doc; } }) }),
+      db: Object.freeze({ collection: (p) => ({ doc: (id) => { if (!/^data\/users\/u1$/.test(p) || !docs[id]) throw new Error('ruta inesperada ' + p + '/' + id); return docs[id]; } }) }),
       user: Object.freeze({ id: async () => 'u1' }),
       assets: Object.freeze({ upload: async (blob) => { const id = await window.__upload(await toB64(blob), blob.type); return { id, url: '/_blob/' + id, sizeBytes: blob.size, contentType: blob.type }; }, delete: async (id) => { await window.__deleteAsset(id); return { deleted: true }; } }),
       downloads: Object.freeze({ save: async ({ filename, data }) => { const blob = data instanceof Blob ? data : new Blob([data]); await window.__save(filename, await toB64(blob)); return { status: 'saved' }; } })
@@ -100,6 +101,21 @@ async function preparePage(context) {
   await b.page.waitForTimeout(800);
   log.push(`eliminar obra → assets ${before} → ${server.assets.size}`);
   await b.page.screenshot({ path: path.join(out, 'artefacto-obras.png') });
+
+  // 6) Convocatoria y certificado en el espacio privado (documento «estudio»)
+  await b.page.click('.brand');
+  await b.page.click('a[data-section-link="estudio"]');
+  await b.page.selectOption('#certFromWork', { index: 1 });
+  await b.page.click('#addCertificate');
+  await b.page.click('#certificateList details >> text=Vista previa');
+  await b.page.waitForSelector('#previewModal:not([hidden])');
+  await b.page.click('#modalPrintButton');
+  await b.page.waitForFunction(() => /PDF listo|No se pudo/.test(document.querySelector('#toast').textContent), null, { timeout: 120000 });
+  const certPdf = server.downloads.find((d) => d.filename.includes('certificado'));
+  log.push(`certificado PDF: ${certPdf ? `${certPdf.filename}, hojas ${(fs.readFileSync(certPdf.file).toString('latin1').match(/\/Type\s*\/Page[^s]/g) || []).length}` : 'no descargado'}`);
+  await b.page.click('#closePreviewButton');
+  await b.page.waitForTimeout(900);
+  log.push('documento estudio guardado: ' + Boolean(server.studio) + (server.studio ? ` (${JSON.parse(server.studio).certificates.length} certificado)` : ''));
 
   log.push('errores: ' + JSON.stringify([...a.errors, ...b.errors]));
   console.log(log.join('\n'));

@@ -6,6 +6,7 @@ Pruebas automáticas con Playwright (Chromium). No forman parte de la app.
 node pruebas/p0-test.js index.html salida/              # PDF con 1, 5 y 15 obras, respaldo, recarga, recortes
 TPL=catalogo node pruebas/p0-test.js index.html salida/ # lo mismo con otra plantilla
 node pruebas/ui-test.js index.html salida/              # panel, confirmaciones, vista previa, guardado al salir, proyecto nuevo, móvil
+node pruebas/vala-test.js index.html salida/            # tipos de documento, convocatorias, correo y certificados
 ```
 
 Modo artefacto de claude.ai, simulado (espacio privado, imágenes en assets, descargas):
