@@ -16,7 +16,7 @@ const [base, out = '.'] = process.argv.slice(2);
   await page.screenshot({ path: `${out}/panel-vacio.png`, fullPage: true });
 
   // Crear un dossier en ArtDossier
-  await page.click('.module[href="artdossier/"]');
+  await page.click('.module[href="artdossier/index.html"]');
   await page.waitForSelector('#tab-configurar');
   await page.click('[data-tab="portada"]');
   await page.fill('#artistName', 'Ana Prueba');
