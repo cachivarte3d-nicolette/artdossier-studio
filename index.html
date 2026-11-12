@@ -227,9 +227,9 @@ img { max-width: 100%; display: block; }
 .doc-page h1 { max-width: 600px; margin: 0; font: 500 4.7rem/.92 Georgia, serif; letter-spacing: -.05em; }
 .doc-page h2 { margin: 0 0 1.2rem; font: 500 2.5rem/1 Georgia, serif; }
 .doc-page p { white-space: pre-wrap; font: 400 1rem/1.75 Georgia, serif; }
-.doc-page .cover-image { width: calc(100% + 144px); height: 500px; margin: 42px -72px 0; object-fit: cover; }
+.doc-page .cover-image { max-width: none; width: calc(100% + 144px); height: 500px; margin: 42px -72px 0; object-fit: cover; }
 .doc-page .cover-bottom { position: absolute; left: 72px; right: 72px; bottom: 60px; display: flex; justify-content: space-between; border-top: 1px solid currentColor; padding-top: 1rem; font-size: .72rem; text-transform: uppercase; }
-.doc-page .work-page-image { width: 100%; max-height: 640px; object-fit: contain; background: #eee; }
+.doc-page .work-page-image { width: 100%; max-height: 640px; object-fit: contain; background: transparent; }
 .doc-page .work-meta { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-top: 1.4rem; }
 .doc-page .work-meta h2 { font-size: 2rem; }
 .doc-page .work-meta p { margin: .2rem 0; font: 400 .8rem/1.5 ui-sans-serif, sans-serif; }
@@ -252,13 +252,13 @@ img { max-width: 100%; display: block; }
 
 #printArea { display: none; }
 
-@media (max-width: 1180px) {
+@media screen and (max-width: 1180px) {
   .app-shell { grid-template-columns: 215px minmax(0, 1fr); }
   .live-preview { display: none; }
   .choice-grid.purposes { grid-template-columns: repeat(3, 1fr); }
 }
 
-@media (max-width: 820px) {
+@media screen and (max-width: 820px) {
   .topbar { padding: 0 14px; }
   .menu-button { display: block; }
   .brand { min-width: 0; }
@@ -279,7 +279,7 @@ img { max-width: 100%; display: block; }
   .doc-page .cover-bottom { left: 42px; right: 42px; bottom: 38px; }
 }
 
-@media (max-width: 520px) {
+@media screen and (max-width: 520px) {
   .brand strong { font-size: .85rem; }
   .top-actions .button.primary { padding-inline: .8rem; }
   .section-heading { align-items: stretch; flex-direction: column; }
@@ -301,23 +301,38 @@ img { max-width: 100%; display: block; }
 
 @page { size: A4; margin: 0; }
 @media print {
-  body { background: white !important; }
-  .no-print, .app-shell, .toast { display: none !important; }
+  html, body { background: var(--print-bg, white) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .no-print, .app-shell, .toast, .missing { display: none !important; }
   #printArea { display: block !important; }
-  #printArea .doc-page { width: 210mm; height: 297mm; min-height: 297mm; page-break-after: always; break-after: page; box-shadow: none; }
-  #printArea .doc-page:last-child { page-break-after: auto; }
+  /* Las páginas crecen si el contenido no cabe: nunca se recorta texto en el PDF. */
+  #printArea .doc-page { width: 210mm; min-height: 297mm; height: auto; overflow: visible; padding: 18mm; page-break-after: always; break-after: page; box-shadow: none; -webkit-box-decoration-break: clone; box-decoration-break: clone; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  #printArea .doc-page:last-child { page-break-after: auto; break-after: auto; }
+  #printArea .doc-page h1 { font-size: 3.6rem; }
+  #printArea .doc-page .cover-image { width: calc(100% + 36mm); height: 130mm; margin: 12mm -18mm 0; }
+  #printArea .doc-page .cover-bottom { left: 18mm; right: 18mm; bottom: 16mm; }
+  #printArea .doc-page .work-page-image { max-height: 170mm; }
+  #printArea .doc-page .portrait-image { max-height: 90mm; }
+  #printArea .cv-entry, #printArea .work-meta, #printArea img { break-inside: avoid; }
 }
+
+.missing { color: #a22819; font-style: italic; }
+.doc-page .portrait-image { width: auto; max-width: 60%; max-height: 420px; margin-top: 2rem; object-fit: contain; }
+.page-warning { margin: -12px 0 0; color: #f8f4ea; font-size: .72rem; text-align: center; }
+.review-box { margin: 24px 32px 0; border-radius: 12px; padding: 1rem 1.2rem; background: #fff4ef; border-left: 3px solid var(--accent); font-size: .8rem; line-height: 1.5; }
+.review-box.ok { background: #eef8e6; border-left-color: #36a662; }
+.review-box ul { margin: .4rem 0 0; padding-left: 1.1rem; }
+.sidebar-reset { margin-top: 1rem; }
 
 .prototype-badge{border:1px solid var(--line);border-radius:999px;padding:.35rem .6rem;color:var(--muted);font-size:.6rem;font-weight:800;letter-spacing:.09em}
 </style>
 </head>
 <body>
-  <a class="skip-link" href="#workspace">Saltar al editor</a>
+  <a class="skip-link no-print" href="#workspace">Saltar al editor</a>
   <header class="topbar no-print">
     <button class="menu-button" id="menuButton" type="button" aria-label="Abrir navegación" aria-expanded="false">☰</button>
     <a class="brand" href="#configurar" aria-label="ArtDossier Studio, inicio"><span class="brand-mark" aria-hidden="true">C.</span><span><strong>ArtDossier</strong><small>STUDIO / CACHIVARTE</small></span></a>
     <div class="top-actions">
-      <span class="save-status" id="saveStatus" role="status">Listo para crear</span><span class="prototype-badge">PROTOTIPO LOCAL</span>
+      <span class="save-status" id="saveStatus" role="status">Listo para crear</span><span class="prototype-badge" title="Tus datos se guardan solo en este navegador">BETA · LOCAL</span>
       <button class="button ghost" id="importButton" type="button">Importar</button>
       <input id="importInput" type="file" accept="application/json,.json" hidden>
       <button class="button ghost" id="exportButton" type="button">Respaldo JSON</button>
@@ -338,7 +353,8 @@ img { max-width: 100%; display: block; }
         <button class="nav-button" type="button" data-tab="contacto"><span>08</span> Contacto</button>
         <button class="nav-button" type="button" data-tab="referentes"><span>09</span> Referentes</button>
       </nav>
-      <div class="sidebar-note"><strong>Tu voz, tus datos</strong><p>Los ejemplos son ficticios y nunca se mezclan con tu dossier.</p></div>
+      <div class="sidebar-note"><strong>Tu voz, tus datos</strong><p>Los ejemplos son ficticios y nunca se mezclan con tu dossier. Tu proyecto se guarda solo en este navegador: descarga un respaldo JSON con frecuencia.</p></div>
+      <button class="text-button sidebar-reset" id="resetButton" type="button">Empezar un proyecto nuevo</button>
     </aside>
     <main class="workspace" id="workspace" tabindex="-1">
       <section class="panel active" id="tab-configurar" aria-labelledby="configurarTitle">
@@ -371,7 +387,7 @@ img { max-width: 100%; display: block; }
             <label class="field"><span>Título del dossier o serie</span><input id="dossierTitle" type="text" maxlength="120" placeholder="Obras seleccionadas 2024–2026"></label>
             <label class="field"><span>Ciudad / país (opcional)</span><input id="city" type="text" maxlength="100" autocomplete="address-level2" placeholder="Ciudad, país"></label>
           </div>
-          <div><label class="upload-field" id="coverDrop"><input id="coverInput" type="file" accept="image/jpeg,image/png,image/webp" hidden><span class="upload-icon" aria-hidden="true">＋</span><strong>Imagen de portada</strong><span>JPG, PNG o WEBP · máximo 10 MB</span><img id="coverPreview" alt="Vista previa de la imagen de portada" hidden></label><button class="text-button" id="removeCover" type="button" hidden>Quitar imagen</button></div>
+          <div><label class="upload-field" id="coverDrop"><input id="coverInput" type="file" accept="image/jpeg,image/png,image/webp" hidden><span class="upload-icon" aria-hidden="true">＋</span><strong>Imagen de portada</strong><span>JPG, PNG o WEBP · máximo 20 MB</span><img id="coverPreview" alt="Vista previa de la imagen de portada" hidden></label><button class="text-button" id="removeCover" type="button" hidden>Quitar imagen</button></div>
         </div>
       </section>
       <section class="panel" id="tab-statement" aria-labelledby="statementTitle" hidden>
@@ -406,7 +422,7 @@ img { max-width: 100%; display: block; }
       <p class="preview-caption">La vista completa incluye portada, textos, obras, CV y contacto.</p><button class="button primary full" id="openPreviewButton" type="button">Abrir dossier completo</button>
     </aside>
   </div>
-  <div class="modal no-print" id="previewModal" role="dialog" aria-modal="true" aria-labelledby="previewTitle" hidden><div class="modal-shell"><header class="modal-header"><div><p class="eyebrow">VISTA PREVIA</p><h2 id="previewTitle">Dossier completo</h2></div><div><button class="button ghost" id="modalPrintButton" type="button">Imprimir / PDF</button><button class="icon-button" id="closePreviewButton" type="button" aria-label="Cerrar vista previa">×</button></div></header><div class="document-stack" id="previewPages"></div></div></div>
+  <div class="modal no-print" id="previewModal" role="dialog" aria-modal="true" aria-labelledby="previewTitle" hidden><div class="modal-shell"><header class="modal-header"><div><p class="eyebrow">VISTA PREVIA</p><h2 id="previewTitle">Dossier completo</h2></div><div><button class="button ghost" id="modalPrintButton" type="button">Imprimir / PDF</button><button class="icon-button" id="closePreviewButton" type="button" aria-label="Cerrar vista previa">×</button></div></header><div class="review-box" id="reviewBox" aria-live="polite"></div><div class="document-stack" id="previewPages"></div></div></div>
   <div id="printArea" aria-hidden="true"></div><div class="toast no-print" id="toast" role="status" aria-live="polite"></div>
   <script>
 "use strict";
@@ -628,7 +644,7 @@ function exportPayload(project) {
 function validImageFile(file) {
   const allowed = ['image/jpeg', 'image/png', 'image/webp'];
   if (!file || !allowed.includes(file.type)) return { ok: false, message: 'Usa una imagen JPG, PNG o WEBP.' };
-  if (file.size > 10 * 1024 * 1024) return { ok: false, message: 'La imagen supera el límite de 10 MB.' };
+  if (file.size > 20 * 1024 * 1024) return { ok: false, message: 'La imagen supera el límite de 20 MB.' };
   return { ok: true, message: '' };
 }
 
@@ -690,13 +706,26 @@ async function readStoredProject() {
     });
     db.close();
     if (result) return normalizeProject(result);
-  } catch {
-    try {
-      const fallback = localStorage.getItem('artdossier-project');
-      if (fallback) return normalizeProject(JSON.parse(fallback));
-    } catch { /* start clean */ }
-  }
+  } catch { /* se intenta el respaldo compatible */ }
+  // También si IndexedDB funciona pero está vacío: un guardado anterior pudo quedar en modo compatible.
+  try {
+    const fallback = localStorage.getItem('artdossier-project');
+    if (fallback) return normalizeProject(JSON.parse(fallback));
+  } catch { /* empezar limpio */ }
   return createEmptyProject();
+}
+
+function hasContent(project) {
+  const p = project.profile;
+  return Boolean(p.artistName || p.dossierTitle || p.statement || p.bio || p.coverImage || project.works.length
+    || Object.values(project.cv).some((list) => list.length) || Object.values(project.contact).some(Boolean));
+}
+
+function flushSave() {
+  if (!saveTimer) return;
+  clearTimeout(saveTimer);
+  saveTimer = 0;
+  saveProject();
 }
 
 async function saveProject({ announce = false } = {}) {
@@ -727,7 +756,7 @@ async function saveProject({ announce = false } = {}) {
 function scheduleSave() {
   setText('#saveStatus', 'Cambios pendientes…');
   clearTimeout(saveTimer);
-  saveTimer = window.setTimeout(() => saveProject(), 600);
+  saveTimer = window.setTimeout(() => { saveTimer = 0; saveProject(); }, 600);
 }
 
 function switchTab(name) {
@@ -868,11 +897,44 @@ function readImage(file) {
   });
 }
 
+// Reduce las imágenes a un tamaño apto para impresión A4 (~300 ppp) para que el guardado,
+// los respaldos JSON y el PDF no pesen decenas de MB. Si la imagen ya es liviana, se conserva.
+const IMAGE_MAX_SIDE = 2400;
+const IMAGE_KEEP_BYTES = 900 * 1024;
+
+async function compressImage(dataUrl) {
+  const image = new Image();
+  image.src = dataUrl;
+  await image.decode();
+  const scale = Math.min(1, IMAGE_MAX_SIDE / Math.max(image.naturalWidth, image.naturalHeight));
+  if (scale === 1 && dataUrl.length * 0.75 <= IMAGE_KEEP_BYTES) return dataUrl;
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+  canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+  const context = canvas.getContext('2d');
+  context.fillStyle = '#ffffff';
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.drawImage(image, 0, 0, canvas.width, canvas.height);
+  const result = canvas.toDataURL('image/jpeg', 0.86);
+  return result.length < dataUrl.length ? result : dataUrl;
+}
+
+async function compressProjectImages(project) {
+  const shrink = async (value) => (value ? safeImage(await compressImage(value).catch(() => value)) : value);
+  project.profile.coverImage = await shrink(project.profile.coverImage);
+  project.profile.portraitImage = await shrink(project.profile.portraitImage);
+  for (const work of project.works) work.image = await shrink(work.image);
+  return project;
+}
+
 async function acceptImage(file, apply) {
   const validation = validImageFile(file);
   if (!validation.ok) return showToast(validation.message);
   try {
-    apply(await readImage(file));
+    const original = await readImage(file);
+    const optimized = safeImage(await compressImage(original).catch(() => original));
+    if (!optimized) return showToast('No se pudo leer la imagen.');
+    apply(optimized);
     updateMiniPreview();
     scheduleSave();
   } catch {
@@ -942,7 +1004,11 @@ function renderWorks() {
     const actions = make('div', 'work-actions');
     const up = make('button', '', '↑'); up.type = 'button'; up.title = 'Mover arriba'; up.disabled = index === 0; up.addEventListener('click', () => moveWork(index, -1));
     const down = make('button', '', '↓'); down.type = 'button'; down.title = 'Mover abajo'; down.disabled = index === state.works.length - 1; down.addEventListener('click', () => moveWork(index, 1));
-    const remove = make('button', 'danger', 'Eliminar'); remove.type = 'button'; remove.addEventListener('click', () => { state.works.splice(index, 1); renderWorks(); scheduleSave(); });
+    const remove = make('button', 'danger', 'Eliminar'); remove.type = 'button'; remove.addEventListener('click', () => {
+      const name = work.title ? `«${work.title}»` : `la obra ${index + 1}`;
+      if (!window.confirm(`¿Eliminar ${name}? Esta acción no se puede deshacer.`)) return;
+      state.works.splice(index, 1); renderWorks(); scheduleSave();
+    });
     actions.append(up, down, remove); header.append(actions); card.append(header);
     const grid = make('div', 'work-editor-grid');
     const fields = make('div', 'work-fields');
@@ -960,9 +1026,9 @@ function renderWorks() {
     });
     const imageLabel = make('label', 'upload-field compact work-image');
     const imageInput = make('input'); imageInput.type = 'file'; imageInput.accept = 'image/jpeg,image/png,image/webp'; imageInput.hidden = true;
-    imageLabel.append(imageInput, make('span', 'upload-icon', '＋'), make('strong', '', 'Imagen de la obra'), make('span', '', 'JPG, PNG o WEBP · máximo 10 MB'));
+    imageLabel.append(imageInput, make('span', 'upload-icon', '＋'), make('strong', '', 'Imagen de la obra'), make('span', '', 'JPG, PNG o WEBP · máximo 20 MB'));
     const preview = make('img'); preview.alt = `Vista previa de ${work.title || `obra ${index + 1}`}`; preview.hidden = !work.image; if (work.image) preview.src = work.image; imageLabel.append(preview);
-    imageInput.addEventListener('change', () => { const [file] = imageInput.files; if (file) acceptImage(file, (value) => { work.image = value; renderWorks(); }); });
+    imageInput.addEventListener('change', () => { const [file] = imageInput.files; if (file) acceptImage(file, (value) => { work.image = value; renderWorks(); }); imageInput.value = ''; });
     imageLabel.addEventListener('dragover', (event) => { event.preventDefault(); imageLabel.classList.add('dragging'); });
     imageLabel.addEventListener('dragleave', () => imageLabel.classList.remove('dragging'));
     imageLabel.addEventListener('drop', (event) => { event.preventDefault(); imageLabel.classList.remove('dragging'); const [file] = event.dataTransfer.files; if (file) acceptImage(file, (value) => { work.image = value; renderWorks(); }); });
@@ -1024,22 +1090,22 @@ function renderDocumentPages(container) {
 
   const cover = newPage(`${discipline} · ${year}`);
   cover.append(make('h1', '', state.profile.dossierTitle || 'Dossier artístico'));
-  const coverByline = make('p', '', state.profile.artistName || 'Nombre por completar');
+  const coverByline = state.profile.artistName ? make('p', '', state.profile.artistName) : make('p', 'missing', 'Falta tu nombre (no se imprimirá este aviso)');
   if (state.profile.professionalTitle) coverByline.append(document.createTextNode(` · ${state.profile.professionalTitle}`));
   cover.append(coverByline);
   if (state.profile.coverImage) { const image = make('img', 'cover-image'); image.src = state.profile.coverImage; image.alt = ''; cover.append(image); }
-  const bottom = make('div', 'cover-bottom'); bottom.append(make('span', '', state.profile.city || 'Ubicación por completar'), make('span', '', purpose)); cover.append(bottom);
+  const bottom = make('div', 'cover-bottom'); bottom.append(make('span', '', state.profile.city), make('span', '', purpose)); cover.append(bottom);
 
-  if (state.profile.statement || state.profile.bio) {
-    const textsPage = newPage('Presentación');
-    appendTextBlock(textsPage, 'Statement', state.profile.statement);
-    appendTextBlock(textsPage, 'Biografía', state.profile.bio);
-    if (state.profile.portraitImage) { const portrait = make('img', 'work-page-image'); portrait.src = state.profile.portraitImage; portrait.alt = ''; textsPage.append(portrait); }
+  if (state.profile.statement) appendTextBlock(newPage('Statement'), 'Statement', state.profile.statement);
+  if (state.profile.bio || state.profile.portraitImage) {
+    const bioPage = newPage('Biografía');
+    appendTextBlock(bioPage, 'Biografía', state.profile.bio);
+    if (state.profile.portraitImage) { const portrait = make('img', 'portrait-image'); portrait.src = state.profile.portraitImage; portrait.alt = `Retrato de ${state.profile.artistName || 'la persona artista'}`; bioPage.append(portrait); }
   }
 
   state.works.filter((work) => work.title || work.image || work.medium).forEach((work, index) => {
     const page = newPage(`Obra ${String(index + 1).padStart(2, '0')}`);
-    if (work.image) { const image = make('img', 'work-page-image'); image.src = work.image; image.alt = ''; page.append(image); }
+    if (work.image) { const image = make('img', 'work-page-image'); image.src = work.image; image.alt = work.title || `Obra ${index + 1}`; page.append(image); }
     const meta = make('div', 'work-meta');
     const main = make('div'); main.append(make('h2', '', work.title || 'Sin título'));
     if (work.medium) main.append(make('p', '', work.medium));
@@ -1070,8 +1136,36 @@ function renderDocumentPages(container) {
   }
 }
 
+function reviewProject() {
+  const issues = [];
+  const works = state.works.filter((work) => work.title || work.image || work.medium);
+  if (!state.profile.artistName) issues.push('Falta tu nombre o firma artística (Portada).');
+  if (!state.profile.dossierTitle) issues.push('Sin título del dossier: se usará «Dossier artístico».');
+  if (!state.profile.statement) issues.push('Aún no hay statement.');
+  if (!works.length) issues.push('Aún no hay obras con contenido.');
+  const noImage = works.filter((work) => !work.image).length;
+  if (noImage) issues.push(`${noImage} obra(s) sin imagen.`);
+  const incomplete = works.filter((work) => !work.title || !work.year || !work.medium || !work.dimensions).length;
+  if (incomplete) issues.push(`${incomplete} obra(s) con la ficha técnica incompleta (título, año, técnica o dimensiones).`);
+  if (!Object.values(state.contact).some(Boolean)) issues.push('Sin datos de contacto.');
+  return issues;
+}
+
+function renderReview() {
+  const box = $('#reviewBox');
+  const issues = reviewProject();
+  box.classList.toggle('ok', !issues.length);
+  box.replaceChildren();
+  if (!issues.length) { box.append(make('strong', '', 'Revisión: todo lo esencial está completo.')); return; }
+  const list = make('ul');
+  issues.forEach((issue) => list.append(make('li', '', issue)));
+  box.append(make('strong', '', 'Revisión antes de exportar'), list);
+}
+
 function openPreview() {
+  flushSave();
   lastFocus = document.activeElement;
+  renderReview();
   renderDocumentPages($('#previewPages'));
   const modal = $('#previewModal'); modal.hidden = false; document.body.style.overflow = 'hidden'; $('#closePreviewButton').focus();
 }
@@ -1080,9 +1174,39 @@ function closePreview() {
   $('#previewModal').hidden = true; document.body.style.overflow = ''; lastFocus?.focus?.();
 }
 
-function printDossier() {
-  renderDocumentPages($('#printArea'));
+function trapFocus(event) {
+  const modal = $('#previewModal');
+  if (event.key !== 'Tab' || modal.hidden) return;
+  const focusable = $$('button, a[href], input, [tabindex]:not([tabindex="-1"])', modal).filter((el) => !el.disabled && el.offsetParent !== null);
+  if (!focusable.length) return;
+  const first = focusable[0];
+  const last = focusable.at(-1);
+  if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+  else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+}
+
+async function printDossier() {
+  if (!state.profile.artistName && !window.confirm('Tu dossier aún no tiene nombre de artista. ¿Quieres exportarlo de todas formas?')) return;
+  flushSave();
+  const area = $('#printArea');
+  renderDocumentPages(area);
+  // El fondo de la hoja continúa el color de la plantilla cuando un texto ocupa más de una hoja.
+  document.documentElement.style.setProperty('--print-bg', getComputedStyle(area.firstElementChild).backgroundColor);
+  // Esperar a que todas las imágenes estén decodificadas para que no salgan en blanco en el PDF.
+  await Promise.all($$('img', area).map((image) => image.decode().catch(() => {})));
   window.requestAnimationFrame(() => window.print());
+}
+
+async function resetProject() {
+  if (hasContent(state) && !window.confirm('Se borrará el proyecto guardado en este navegador. Te recomendamos descargar antes un respaldo JSON. ¿Empezar un proyecto nuevo?')) return;
+  clearTimeout(saveTimer); saveTimer = 0;
+  state = createEmptyProject();
+  try { localStorage.removeItem('artdossier-project'); } catch { /* sin acceso */ }
+  hydrateUI();
+  switchTab('configurar');
+  await saveProject();
+  setText('#saveStatus', 'Proyecto nuevo');
+  showToast('Proyecto nuevo creado.');
 }
 
 function exportProject() {
@@ -1095,14 +1219,20 @@ function exportProject() {
 }
 
 async function importProject(file) {
-  if (!file || file.size > 25 * 1024 * 1024) return showToast('El respaldo debe pesar menos de 25 MB.');
+  // Límite amplio: los respaldos antiguos guardaban las imágenes sin optimizar.
+  if (!file || file.size > 200 * 1024 * 1024) return showToast('El respaldo debe pesar menos de 200 MB.');
+  if (hasContent(state) && !window.confirm('Importar reemplazará el proyecto actual de este navegador. ¿Continuar?')) return;
   try {
+    setText('#saveStatus', 'Importando…');
     const parsed = JSON.parse(await file.text());
-    state = normalizeProject(parsed);
+    const imported = await compressProjectImages(normalizeProject(parsed));
+    clearTimeout(saveTimer); saveTimer = 0;
+    state = imported;
     hydrateUI();
     await saveProject();
     showToast('Respaldo importado correctamente.');
   } catch {
+    setText('#saveStatus', 'Importación cancelada');
     showToast('El archivo no contiene un respaldo JSON válido.');
   }
 }
@@ -1131,7 +1261,12 @@ function bindEvents() {
   ['previewButton', 'openPreviewButton'].forEach((id) => $(`#${id}`).addEventListener('click', openPreview));
   $('#closePreviewButton').addEventListener('click', closePreview);
   $('#previewModal').addEventListener('click', (event) => { if (event.target === $('#previewModal')) closePreview(); });
-  document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !$('#previewModal').hidden) closePreview(); });
+  document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !$('#previewModal').hidden) closePreview(); trapFocus(event); });
+  $('.brand').addEventListener('click', (event) => { event.preventDefault(); switchTab('configurar'); });
+  $('#resetButton').addEventListener('click', resetProject);
+  // No perder los últimos cambios si se cierra la pestaña o se cambia de app (móvil).
+  window.addEventListener('pagehide', flushSave);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushSave(); });
   ['printButton', 'modalPrintButton'].forEach((id) => $(`#${id}`).addEventListener('click', printDossier));
   $('#exportButton').addEventListener('click', exportProject);
   $('#importButton').addEventListener('click', () => $('#importInput').click());
@@ -1145,6 +1280,13 @@ async function init() {
   bindImageInput({ input: $('#portraitInput'), drop: $('#portraitDrop'), preview: $('#portraitPreview'), remove: $('#removePortrait'), getValue: () => state.profile.portraitImage, setValue: (value) => { state.profile.portraitImage = value; } });
   bindEvents(); renderReferences(); hydrateUI();
   setText('#saveStatus', state.updatedAt ? 'Proyecto recuperado' : 'Listo para crear');
+  // Proyectos guardados por versiones anteriores pueden tener imágenes sin optimizar.
+  const images = [state.profile.coverImage, state.profile.portraitImage, ...state.works.map((work) => work.image)];
+  if (images.some((value) => value && value.length * 0.75 > IMAGE_KEEP_BYTES * 2)) {
+    const current = state;
+    await compressProjectImages(current);
+    if (current === state) { hydrateUI(); await saveProject(); setText('#saveStatus', 'Proyecto recuperado y optimizado'); }
+  }
 }
 
 init();
